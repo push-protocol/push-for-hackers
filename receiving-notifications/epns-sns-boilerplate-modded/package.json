@@ -1,0 +1,26 @@
+{
+  "name": "epns-sns-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "type": "commonjs",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bent": "^7.3.12",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.6.7",
+    "parse-url": "^8.0.0",
+    "sns-payload-validator": "^1.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}

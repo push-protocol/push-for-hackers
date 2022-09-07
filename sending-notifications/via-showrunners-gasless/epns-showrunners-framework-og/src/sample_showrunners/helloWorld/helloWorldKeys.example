@@ -1,0 +1,62 @@
+// THIS FILE ONLY CONTAIN EXAMPLES AND CAN BE SAFELY REMOVED
+// REMOVE COMMENTS AND UNNECESSARY JSON EXAMPLES WHEN COPYING THIS
+// NOTE: Both PRIVATE_KEY_NEW_STANDARD OR PRIVATE_KEY_OLD_STANDARD is supported
+// but recommended to follow NEW_STANDARD
+// ABOUT NEW STANDARD PARAMS
+// PK = represents your channel or channel delegate private key
+// READ MORE ABOUT CHANNELS / CHANNEL DELEGATES: https://docs.epns.io/developers/concepts/create-your-notif-channel
+// IMPORTANT: Your private key is only used to sign your notifications so that it can be validated by push nodes
+// READ MORE ABOUT HOW IT WORKS: https://docs.epns.io/developers/developer-tooling/showrunners-framework/how-to-setup-showrunners
+// CHAIN_ID = reprensents the multichain supported address
+// FOR ETHEREUM
+// CHAIN_ID = pass eip155:42 for Ethereum Kovan Address
+// CHAIN_ID = pass eip155:80001 for Polygon Mumbai Addresses
+// ----
+// FOR POLYGON
+// CHAIN_ID = pass eip155:1 for Ethereum Mainnet Addresses
+// CHAIN_ID = pass eip155:137 for Ethereum Mainnet Addresses
+
+// TEMPLATES, PICK ONLY ONE
+// ---
+// TEMPLATE FOR ETHEREUM ONLY STAGING CHANNEL
+// ---
+// {
+//   "PRIVATE_KEY_NEW_STANDARD": {
+//     "PK": "YOUR_CHANNEL_PRIVATE_KEY_HERE",
+//     "CHAIN_ID": "eip155:42"
+//   },
+//   "PRIVATE_KEY_OLD_STANDARD": "YOUR_CHANNEL_PRIVATE_KEY_HERE"
+// }
+
+// ---
+// TEMPLATE FOR MULTICHAIN CHANNEL ON STAGING SUPPORTING POLYGON
+// ---
+// {
+//   "PRIVATE_KEY_NEW_STANDARD": {
+//     "PK": "YOUR_CHANNEL_PRIVATE_KEY_HERE",
+//     "CHAIN_ID": "eip155:80001"
+//   },
+//   "PRIVATE_KEY_OLD_STANDARD": "YOUR_CHANNEL_PRIVATE_KEY_HERE"
+// }
+
+// ---
+// TEMPLATE FOR ETHEREUM ONLY MAINNET CHANNEL
+// ---
+// {
+//   "PRIVATE_KEY_NEW_STANDARD": {
+//     "PK": "YOUR_CHANNEL_PRIVATE_KEY_HERE",
+//     "CHAIN_ID": "eip155:1"
+//   },
+//   "PRIVATE_KEY_OLD_STANDARD": "YOUR_CHANNEL_PRIVATE_KEY_HERE"
+// }
+
+// ---
+// TEMPLATE FOR MULTICHAIN CHANNEL ON MAINNET SUPPORTING POLYGON
+// ---
+// {
+//   "PRIVATE_KEY_NEW_STANDARD": {
+//     "PK": "YOUR_CHANNEL_PRIVATE_KEY_HERE",
+//     "CHAIN_ID": "eip155:137"
+//   },
+//   "PRIVATE_KEY_OLD_STANDARD": "YOUR_CHANNEL_PRIVATE_KEY_HERE"
+// }

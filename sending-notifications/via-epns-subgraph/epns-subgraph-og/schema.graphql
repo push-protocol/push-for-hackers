@@ -1,0 +1,250 @@
+#
+# Provides information about an Ethereum account
+#
+type Account @entity {
+  " Equals to: <accountAddress>"
+  id: ID!
+
+  " Account address "
+  address: Bytes!
+
+  " Token balances that this account holds "
+  balances: [AccountBalance!]! @derivedFrom(field: "account")
+}
+
+#
+# Current token balance of a particular Ethereum account
+#
+type AccountBalance @entity {
+  " Equals to: <accountAddress>-<tokenAddress>"
+  id: ID!
+
+  " Account address "
+  account: Account!
+
+  " Token address "
+  token: Token!
+
+  " Current account balance "
+  amount: BigDecimal!
+
+  " Block number in which the balance was last modified "
+  block: BigInt
+
+  " Last modified timestamp in seconds "
+  modified: BigInt
+
+  " Hash of the last transaction that modified the balance "
+  transaction: Bytes
+}
+
+#
+# Token balance of a particular Ethereum account in a certain timestamp. This entity is used to
+# provide information about evolution of account balances
+#
+type AccountBalanceSnapshot @entity {
+  " Equals to: <accountAddress>-<tokenAddress>-<timestamp>"
+  id: ID!
+
+  " Account address "
+  account: Account!
+
+  " Token addess "
+  token: Token!
+
+  " Account balance "
+  amount: BigDecimal!
+
+  # TODO: Add description and check if could be non-optional
+  event: TokenEvent
+
+  " Block number "
+  block: BigInt!
+
+  " Timestamp in seconds "
+  timestamp: BigInt!
+
+  " Transaction hash "
+  transaction: Bytes!
+}
+
+#
+# Provides information about an ERC20 token
+#
+type Token @entity {
+  id: ID!
+
+  " Token address "
+  address: Bytes!
+
+  " Number of decimals the token uses "
+  decimals: Int!
+
+  " Human-readable name of the token "
+  name: String!
+
+  " Symbol of the token "
+  symbol: String!
+
+  " Token description "
+  description: String
+
+  " Image URL "
+  imageUrl: String
+
+  " Token flags"
+  flags: [String!]!
+
+  " If token transfers are paused "
+  paused: Boolean
+
+  # TODO: Number of token holders
+  # holderCount: BigInt!
+
+  " Total number of events (all types)"
+  eventCount: BigInt!
+
+  " Total number of burn events "
+  burnEventCount: BigInt!
+
+  " Total number of mint events "
+  mintEventCount: BigInt!
+
+  " Total number of transfer events "
+  transferEventCount: BigInt!
+
+  " Total token supply "
+  totalSupply: BigDecimal!
+
+  " Total token burned "
+  totalBurned: BigDecimal!
+
+  " Total token minted "
+  totalMinted: BigDecimal!
+
+  " Total token transferred "
+  totalTransferred: BigDecimal!
+
+  " List of token events "
+  events: [TokenEvent!]! @derivedFrom(field: "token")
+}
+
+#
+# Token events
+#
+interface TokenEvent {
+  id: ID!
+  token: Token!
+  amount: BigDecimal!
+  sender: Bytes!
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type BurnEvent implements TokenEvent @entity {
+  id: ID!
+
+  " Token address "
+  token: Token!
+
+  " Quantity of tokens burned "
+  amount: BigDecimal!
+
+  " Transaction sender address "
+  sender: Bytes!
+
+  " Address of burner account "
+  burner: Bytes!
+
+  " Block number "
+  block: BigInt!
+
+  " Event timestamp "
+  timestamp: BigInt!
+
+  " Transaction hash "
+  transaction: Bytes!
+}
+
+type MintEvent implements TokenEvent @entity {
+  id: ID!
+
+  " Token address "
+  token: Token!
+
+  " Quantity of tokens minted "
+  amount: BigDecimal!
+
+  " Transaction sender address "
+  sender: Bytes!
+
+  " Address of minter account "
+  minter: Bytes!
+
+  " Address of destination account "
+  destination: Bytes!
+
+  " Block number "
+  block: BigInt!
+
+  " Event timestamp "
+  timestamp: BigInt!
+
+  " Transaction hash "
+  transaction: Bytes!
+}
+
+type TransferEvent implements TokenEvent @entity {
+  id: ID!
+
+  " Token address "
+  token: Token!
+
+  " Quantity of tokens transferred "
+  amount: BigDecimal!
+
+  " Transaction sender address "
+  sender: Bytes!
+
+  " Address of source account "
+  source: Bytes!
+
+  " Address of destination account "
+  destination: Bytes!
+
+  " Block number "
+  block: BigInt!
+
+  " Event timestamp "
+  timestamp: BigInt!
+
+  " Transaction hash "
+  transaction: Bytes!
+}
+
+type PauseEvent implements TokenEvent @entity {
+  id: ID!
+
+  " Token address "
+  token: Token!
+
+  " Greater than zero if token is paused "
+  amount: BigDecimal!
+
+  " Transaction sender address "
+  sender: Bytes!
+
+  " Address of pauser account "
+  pauser: Bytes!
+
+  " Block number "
+  block: BigInt!
+
+  " Event timestamp "
+  timestamp: BigInt!
+
+  " Transaction hash "
+  transaction: Bytes!
+}

@@ -1,0 +1,69 @@
+{
+  "NODE_ENV": "development",
+  "PORT": "5432",
+  "RUNNING_ON_MACHINE": "windows",
+  "TRUSTED_URLS": ["https://epns.io", "https://backend.epns.io", "https://app.epns.io", "https://www.epns.io"],
+
+  "DB_HOST": "localhost",
+  "DB_NAME": "dbname",
+  "DB_USER": "2roor",
+  "DB_PASS": "s1mpl3",
+
+  "MONGO_URI": "mongodb://localhost:27017",
+  "REDIS_URL": "redis://localhost:6379",
+
+  "FS_SERVER_DEV": "http://localhost:4000/cache/",
+  "FS_SERVER_PROD": "https://showrunners.epns.io/cache/",
+
+  "SERVE_STATIC_FILES": "public",
+  "SERVE_CACHE_FILES": "cache",
+  "LOG_LEVEL": "debug",
+  "DEFAULT_MAX_ATTEMPTS": 3,
+
+  "IPFS_MAX_ATTEMPTS": 3,
+  "IPFS_GATEWAY": "https://gateway.ipfs.io/ipfs/",
+  "IPFS_LOCAL_ENDPOINT": "/ip4/0.0.0.0/tcp/5001",
+  "IPFS_INFURA_ENDPOINT": "https://ipfs.infura.io:5001",
+
+  "POLYGON_MAINNET_RPC": "https://rpc-mainnet.maticvigil.com",
+  "POLYGON_MUMBAI_RPC": "https://rpc-mumbai.maticvigil.com",
+
+  "GNOSIS_MAINNET_RPC": "https://xdai.poanetwork.dev",
+
+  "KOVAN_WEB3_NETWORK": "kovan",
+  "ROPSTEN_WEB3_NETWORK": "ropsten",
+  "MAINNET_WEB3_NETWORK": "homestead",
+
+  "EPNS_DEPLOYED_CONTRACT": "0x77589b22d37C94473c17128beeb6bc3DaB58c09a",
+  "EPNS_POLYGON_DEPLOYED_COMMUNICATOR_CONTRACT": "0x3f9b6838C31F466266d50A8192dE95f5BEb37e8A",
+  "EPNS_ROPSTEN_DEPLOYED_COMMUNICATOR_CONTRACT": "0x5B995e9831Be34aea8Ee38E0389245B6A35493Fd",
+  "EPNS_KOVAN_DEPLOYED_COMMUNICATOR_CONTRACT": "0x87da9Af1899ad477C67FeA31ce89c1d2435c77DC",
+  "EPNS_MAINNET_DEPLOYED_COMMUNICATOR_CONTRACT": "0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa",
+  "EPNS_CORE_KOVAN_DEPLOYED_CONTRACT": "0x97D7c5f14B8fe94Ef2b4bA589379f5Ec992197dA",
+  "EPNS_CORE_MAINNET_DEPLOYED_CONTRACT": "0x66329Fdd4042928BfCAB60b179e1538D56eeeeeE",
+
+  "MASTER_WALLET_ETH_THRESHOLD": 5,
+  "SHOWRUNNER_WALLET_ETH_THRESHOLD": 0.5,
+  "ETHER_TRANSFER_AMOUNT": 1,
+  "WALLET_MONITORING_JOB_RECURRENCE_PER_HOUR": 1,
+
+  "KOVAN_WEB3_SOCKET": "wss://kovan-rpc.linkpool.io/ws",
+  "ROPSTEN_WEB3_SOCKET": "wss://ropsten-rpc.linkpool.io/ws",
+  "MAINNET_WEB3_SOCKET": "wss://mainnet-rpc.linkpool.io/ws",
+
+  "CMC_ENDPOINT": "https://pro-api.coinmarketcap.com/",
+  "CMC_SANDBOX_ENDPOINT": "https://sandbox-api.coinmarketcap.com/",
+
+  "GAS_ENDPOINT": "https://ethgasstation.info/",
+  "ENS_ENDPOINT": "https://api.thegraph.com/",
+
+  "SUPPORT_MAIL_ADDRESS": "support@notneeded.com",
+  "SUPPORT_MAIL_NAME": "Showrunner Support",
+  "SOURCE_MAIL_ADDRESS": "dbot@notneeded.com",
+  "SOURCE_MAIL_NAME": "Showrunner Support Bot",
+
+  "MASTER_WALLET_PRIVATE_KEY": "not_needed_deprecated",
+  "WALLET_MONITORING": "0",
+  "ACCESS_KEY_ID": "not_needed_deprecated",
+  "SECRET_ACCESS_KEY": "not_needed_deprecated"
+}
