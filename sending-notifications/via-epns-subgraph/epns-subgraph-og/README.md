@@ -1,3 +1,3 @@
-# ERC20 subgraph
+# Example
 
-Work in progress. Do not use.
+[https://docs.epns.io/developers/developer-guides/sending-notifications/using-subgraph-gasless](Read more about Subgraph notification)
