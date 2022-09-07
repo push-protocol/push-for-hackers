@@ -1,2 +1,2 @@
 # Example
-[https://docs.epns.io/developers/developer-guides/examples/notification-via-smart-contract-examples/token-transfer-notification-via-smart-contract-example](Example of notification from smart contract on token transfer)
+[Example of notification from smart contract on token transfer](https://docs.epns.io/developers/developer-guides/examples/notification-via-smart-contract-examples/token-transfer-notification-via-smart-contract-example)

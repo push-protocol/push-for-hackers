@@ -1,6 +1,7 @@
 # Example
 
-[https://docs.epns.io/developers/developer-guides/receiving-notifications/receiving-via-aws-sns](Example of AWS SNS for Web2.5 platforms)
+[Example of AWS SNS for Web2.5 platforms](https://docs.epns.io/developers/developer-guides/receiving-notifications/receiving-via-aws-sns)
+
 
 # EPNS SNS Boilerplate
 
