@@ -1,0 +1,27 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: PushToken
+    network: kovan
+    source:
+      address: "0xc9e7A86dd5f3c3d92C516E2d05DcebaD16Bb6B07"
+      abi: PushToken
+      startBlock: 31966621 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Transfer
+        - Approval
+      abis:
+        - name: PushToken
+          file: ./abis/PushToken.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+      file: ./src/mapping.ts
