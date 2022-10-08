@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
-    "@epnsproject/sdk-restapi": "0.1.13",
+    "@epnsproject/sdk-restapi": "^0.1.20",
     "@ethersproject/contracts": "^5.6.0",
     "@ethersproject/providers": "^5.6.0",
     "@my-app/contracts": "^1.0.0",
