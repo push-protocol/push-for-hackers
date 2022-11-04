@@ -128,7 +128,7 @@ package-lock.json
 yarn.lock
 
 # mac
-*.DS_Store
+.DS_Store
 
 # CUSTOM ONES
 build
