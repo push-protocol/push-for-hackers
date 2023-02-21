@@ -7,6 +7,10 @@ dotenv.config();
 
 // initialize sdk
 import * as PushAPI from "@pushprotocol/restapi";
+import {
+  createSocketConnection,
+  EVENTS
+} from '@pushprotocol/socket';
 import { ethers } from "ethers";
 
 // testing SDK Functionalities
@@ -253,12 +257,37 @@ async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_
 async function PushAPI_channels_getSubscribers() {
   const subscribers = await PushAPI.channels._getSubscribers({
     channel: `eip155:5:${channelAddress}`, // channel address in CAIP
-    env: 'staging'
+    env: _env
   });
 
   console.log(chalk.gray("PushAPI.channels._getSubscribers | Response - 200 OK"));
   console.log(subscribers);
 }
+
+// Push Notification - Socket Connection
+function PushSDKSocket_listen() {
+  const pushSDKSocket = createSocketConnection({
+    user: `eip155:5:${walletAddress}`, // CAIP, see below
+    env: _env,
+    socketOptions: { autoConnect: false }
+  });
+
+  pushSDKSocket.connect();
+
+  pushSDKSocket.on(EVENTS.CONNECT, () => {
+    console.log(chalk.gray("Socket Connected"));
+  });
+  
+  pushSDKSocket.on(EVENTS.DISCONNECT, () => {
+    console.log(chalk.gray("Socket Disconnected"));
+  });
+  
+  pushSDKSocket.on(EVENTS.USER_FEEDS, (feedItem) => {
+    // feedItem is the notification data when that notification was received
+    console.log(chalk.gray(feedItem));
+  });
+}
+
 
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
@@ -279,11 +308,12 @@ async function PushAPI_user_create() {
 
 // Master control
 // -----
-console.log(chalk.bgYellow("All features of Push Notifications"));
-await runNotificaitonsUseCases();
+// console.log(chalk.bgYellow("All features of Push Notifications"));
+// await runNotificaitonsUseCases();
 
-console.log(chalk.bgYellow("\nAll features of Push Chat"));
-await runChatUseCases();
+// console.log(chalk.bgYellow("\nAll features of Push Chat"));
+// await runChatUseCases();
+await PushSDKSocket_listen();
 
 console.log(chalk.bgBlue.white.bold("SDK FUNCTIONALITIES END"));
 console.log("\n");
