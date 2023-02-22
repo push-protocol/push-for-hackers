@@ -63,6 +63,8 @@ async function runNotificaitonsUseCases() {
   console.log(chalk.bgGreen.bold("PushAPI.channels.unsubscribe()"));
   await PushAPI_channels_unsubscribe();
 
+  // IMPORTANT: VARIOUS OTHER NOTIFICATIONS FORMAT SUPPORTED
+  // EXAMPLES HERE: https://github.com/ethereum-push-notification-service/push-sdk/blob/main/packages/restapi/README.md
   console.log(chalk.bgGreen.bold("PushAPI.payloads.sendNotification() [Direct Payload, Single Recipient]"));
   await PushAPI_payloads_sendNotification__direct_payload_single_recipient();
 
@@ -72,11 +74,11 @@ async function runNotificaitonsUseCases() {
   console.log(chalk.bgGreen.bold("PushAPI.payloads.sendNotification() [Direct Payload, All Recipients (Broadcast)]"));
   await PushAPI_payloads_sendNotification__direct_payload_all_recipients_brodcast();
 
-  // IMPORTANT: VARIOUS OTHER NOTIFICATIONS FORMAT SUPPORTED
-  // EXAMPLES HERE: https://github.com/ethereum-push-notification-service/push-sdk/blob/main/packages/restapi/README.md
-
   console.log(chalk.bgGreen.bold("PushAPI.channels._getSubscribers()"));
   await PushAPI_channels_getSubscribers();
+
+  console.log(chalk.bgGreen.bold("PushSDKSocket()"));
+  await PushSDKSocket();
 }
 
 // Push Notification - PushAPI.user.getFeeds
@@ -178,7 +180,7 @@ async function PushAPI_channels_unsubscribe() {
 // Push Notification - Send Notifications
 // // Direct payload for single recipient(target)
 // // // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_single_recipient() {
+async function PushAPI_payloads_sendNotification__direct_payload_single_recipient(silent) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: _signer, // Need to resolve to channel address
     type: 3, // target
@@ -199,12 +201,14 @@ async function PushAPI_payloads_sendNotification__direct_payload_single_recipien
   });
 
   console.log(chalk.gray("PushAPI.payloads.sendNotification | Response - 204 OK"));
-  console.log(apiResponse);
+  if (!silent) {
+    console.log(apiResponse);
+  }
 }
 
 // // Push Notification - Direct payload for group of recipients(subset)
 // // // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipient_subset() {
+async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipient_subset(silent) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: _signer, // Need to resolve to channel address
     type: 4, // subset
@@ -225,12 +229,14 @@ async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipi
   });
 
   console.log(chalk.gray("PushAPI.payloads.sendNotification | Response - 204 OK"));
-  console.log(apiResponse);
+  if (!silent) {
+    console.log(apiResponse);
+  }
 }
 
 // // Push Notification - Direct payload for all recipients(broadcast)
 // // // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_brodcast() {
+async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_brodcast(silent) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: _signer, // Needs to resolve to channel address
     type: 1, // broadcast
@@ -250,7 +256,9 @@ async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_
   });
 
   console.log(chalk.gray("PushAPI.payloads.sendNotification | Response - 204 OK"));
-  console.log(apiResponse);
+  if (!silent) {
+    console.log(apiResponse);
+  }
 }
 
 // Push Notification - Get Subscribers list from channels (DEPRECATED)
@@ -265,7 +273,7 @@ async function PushAPI_channels_getSubscribers() {
 }
 
 // Push Notification - Socket Connection
-function PushSDKSocket_listen() {
+async function PushSDKSocket() {
   const pushSDKSocket = createSocketConnection({
     user: `eip155:5:${walletAddress}`, // CAIP, see below
     env: _env,
@@ -274,8 +282,11 @@ function PushSDKSocket_listen() {
 
   pushSDKSocket.connect();
 
-  pushSDKSocket.on(EVENTS.CONNECT, () => {
-    console.log(chalk.gray("Socket Connected"));
+  pushSDKSocket.on(EVENTS.CONNECT, async () => {
+    console.log(chalk.gray("Socket Connected - will disconnect after 4 seconds"));
+    
+    // send a notification to see the result 
+    await PushAPI_payloads_sendNotification__direct_payload_single_recipient(true);
   });
   
   pushSDKSocket.on(EVENTS.DISCONNECT, () => {
@@ -284,8 +295,15 @@ function PushSDKSocket_listen() {
   
   pushSDKSocket.on(EVENTS.USER_FEEDS, (feedItem) => {
     // feedItem is the notification data when that notification was received
-    console.log(chalk.gray(feedItem));
+    console.log(chalk.gray("Incoming Feed from Socket"));
+    console.log(feedItem);
+
+    // disconnect socket after this, not to be done in real implementations
+    pushSDKSocket.disconnect();
   });
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+  await delay(4000);
 }
 
 
@@ -298,8 +316,8 @@ async function runChatUseCases() {
 // Push Chat - Create User
 async function PushAPI_user_create() {
   const user = await PushAPI.user.create({
-    account: walletAddress,
-    env: 'staging',
+    signer: _signer,
+    env: _env,
   });
 
   console.log(chalk.gray("PushAPI_user_create | Response - 200 OK"));
@@ -312,8 +330,7 @@ async function PushAPI_user_create() {
 // await runNotificaitonsUseCases();
 
 // console.log(chalk.bgYellow("\nAll features of Push Chat"));
-// await runChatUseCases();
-await PushSDKSocket_listen();
+await runChatUseCases();
 
 console.log(chalk.bgBlue.white.bold("SDK FUNCTIONALITIES END"));
 console.log("\n");
