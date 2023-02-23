@@ -310,7 +310,16 @@ async function PushSDKSocket() {
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
   console.log(chalk.bgGreen.bold("PushAPI_user_create"));
-  await PushAPI_user_create();
+  const user = await PushAPI_user_create();
+  await PushAPI_user_get();
+  const encryptedPGPPvtKey = user.encryptedPrivateKey;
+  const rawPGPKey = await PushAPI_chat_decryptPGPKey(encryptedPGPPvtKey);
+  await PushAPI_chat_send(rawPGPKey);
+  await PushAPI_chat_requests(rawPGPKey);
+  await PushAPI_chat_chats(rawPGPKey);
+  await PushAPI_chat_approve(rawPGPKey);
+  await PushAPI_chat_conversationHash();
+  await PushAPI_chat_history(rawPGPKey);
 }
 
 // Push Chat - Create User
@@ -322,6 +331,125 @@ async function PushAPI_user_create() {
 
   console.log(chalk.gray("PushAPI_user_create | Response - 200 OK"));
   console.log(user);
+  return user;
+}
+
+// Push Chat - Get User
+async function PushAPI_user_get() {
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_user_get | Response - 200 OK"));
+  console.log(user);
+}
+
+// Push Chat - Decrypt PGP Key
+async function PushAPI_chat_decryptPGPKey(pgpPvtKey) {
+  const pgpKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: pgpPvtKey,
+    signer: _signer
+  });
+
+  console.log(chalk.gray("PushAPI_chat_decryptPGPKey | Response - 200 OK"));
+  console.log(pgpKey);
+  return pgpKey;
+}
+
+// Push Chat - Send Message
+async function PushAPI_chat_send(pgpKey) {
+  const response = await PushAPI.chat.send({
+    messageContent,
+    messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
+    receiverAddress: walletAddressAlt2,
+    signer: _signer,
+    pgpPrivateKey: pgpKey,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_send | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Decrypt PGP Key
+async function PushAPI_chat_decryptPGPKey(pgpPvtKey) {
+  const pgpKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: pgpPvtKey,
+    signer: _signer
+  });
+
+  console.log(chalk.gray("PushAPI_chat_decryptPGPKey | Response - 200 OK"));
+  console.log(pgpKey);
+  return pgpKey;
+}
+
+// Push Chat - Get Requests
+async function PushAPI_chat_requests(pgpPvtKey) {
+  const response = await PushAPI.chat.requests({
+    account: walletAddress,
+    pgpPrivateKey: pgpPvtKey,
+    toDecrypt: true,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_requests | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Get Chats
+async function PushAPI_chat_chats(pgpPvtKey) {
+  const response = await PushAPI.chat.chats({
+    account: walletAddress,
+    pgpPrivateKey: pgpPvtKey,
+    toDecrypt: true,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_chats | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Approve
+async function PushAPI_chat_approve(pgpPvtKey) {
+  const response = await PushAPI.chat.approve({
+    status: 'Approved',
+    signer: _signer,
+    senderAddress: walletAddressAlt2, // request sender address
+    env: _env,
+    pgpPrivateKey: pgpPvtKey,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_approve | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Conversation Hash
+async function PushAPI_chat_conversationHash() {
+  const response = await PushAPI.chat.conversationHash({
+    account: walletAddress,
+    conversationId: walletAddressAlt2, // 2nd address
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_conversationHash | Response - 200 OK"));
+  console.log(response);
+  return response;
+}
+
+// Push Chat - History
+async function PushAPI_chat_history(pgpPvtKey) {
+  const response = await PushAPI.chat.history({
+    threadhash: '', // get conversation hash from conversationHash function and send the response threadhash here
+    account: walletAddress,
+    pgpPrivateKey: pgpPvtKey,
+    limit: 5,
+    toDecrypt: true,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_history | Response - 200 OK"));
+  console.log(response);
 }
 
 // Master control
