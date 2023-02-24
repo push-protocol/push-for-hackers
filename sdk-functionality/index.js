@@ -42,6 +42,7 @@ const _groupName = 'Test Group';
 const _groupDescription = 'This a dunny group description';
 const _members = ['0x4dAD499341C09FCF8169ACAa98295Ba259035a10' ,'0x6f60552343f01cbfeaacDA00F6b66099b19F691D'];
 const _updatedMembers = _members.push('0x9E8aBc931C2E340d7a1B4b28d528e2fE333432d1');
+const _groupImage = 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fd%2Fd0%2FEth-diamond-rainbow.png&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FEthereum&tbnid=S9BLdj9exV77pM&vet=12ahUKEwjVqKrBsK39AhU8IbcAHf9gDK8QMygAegUIARDeAQ..i&docid=CJMg0dCzhmN_kM&w=1920&h=3201&q=eth&ved=2ahUKEwjVqKrBsK39AhU8IbcAHf9gDK8QMygAegUIARDeAQ';
 
 // test dotenv and wallet
 console.log(chalk.gray("Testing ENV file, should display wallet private key - " + process.env.WALLET_PRIVATE_KEY));
@@ -469,6 +470,7 @@ async function PushAPI_chat_createGroup(pgpPvtKey) {
         groupName:_groupName,
         groupDescription:_groupDescription,
         members: _members,
+        groupImage: _groupImage,
         admins: [],
         isPublic: true,
         account: walletAddress,
@@ -488,6 +490,7 @@ async function PushAPI_chat_updateGroup(pgpPvtKey) {
         groupName:_groupName,
         groupDescription:_groupDescription,
         members: _updatedMembers,
+        groupImage: _groupImage,
         admins: [],
         isPublic: true,
         account: walletAddress,
