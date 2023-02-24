@@ -34,7 +34,8 @@ const _signer = new ethers.Wallet(Pkey, provider);
 const walletAddress = _signer.address;
 
 // generate some dummy wallets as well
-const walletAddressAlt2 = "0xCdBE6D076e05c5875D90fa35cc85694E1EAFBBd1";
+const walletAddressAlt2 = "0x0F1AAC847B5720DDf01BFa07B7a8Ee641690816d";
+const walletAddressAlt3 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
 // dummy group data 
 const _chatId = '4d7d37f7c339e39abc67877811ad35e949b26a0a531cf0d87d6a8745c3f50755';
@@ -317,24 +318,45 @@ async function PushSDKSocket() {
 
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
-  console.log(chalk.bgGreen.bold("PushAPI_user_create"));
-  const user = await PushAPI_user_create();
-  await PushAPI_user_get();
-  const encryptedPGPPvtKey = user.encryptedPrivateKey;
-  const rawPGPKey = await PushAPI_chat_decryptPGPKey(encryptedPGPPvtKey);
-  await PushAPI_chat_send(rawPGPKey);
-  await PushAPI_chat_requests(rawPGPKey);
-  await PushAPI_chat_chats(rawPGPKey);
-  await PushAPI_chat_approve(rawPGPKey);
-  await PushAPI_chat_conversationHash();
-  await PushAPI_chat_history(rawPGPKey);
-  await PushAPI_chat_createGroup(rawPGPKey);
-  await PushAPI_chat_updateGroup(rawPGPKey);
-  await PushAPI_chat_getGroup();
-  await PushAPI_chat_getGroupByName();
+  // console.log(chalk.bgGreen.bold("PushAPI.user.create"));
+  // try {
+  //   // incase the user is already created
+  //   await PushAPI_user_create();
+  // } catch (e) {
+  //   console.log(chalk.gray("Skipping as the user might be already created"));
+  // }
+
+  // console.log(chalk.bgGreen.bold("PushAPI.user.get"));
+  // await PushAPI_user_get();
+
+  // console.log(chalk.bgGreen.bold("PushAPI_chat_decryptPGPKey"));
+  // await PushAPI_chat_decryptPGPKey();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.chats"));
+  // await PushAPI_chat_chats();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.requests"));
+  // await PushAPI_chat_requests();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.conversationHash"));
+  // await PushAPI_chat_conversationHash();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.latest"));
+  // await PushAPI_chat_latest();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.send"));
+  // await PushAPI_chat_send();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
+  // await PushAPI_chat_approve();
+
+  // await PushAPI_chat_createGroup(rawPGPKey);
+  // await PushAPI_chat_updateGroup(rawPGPKey);
+  // await PushAPI_chat_getGroup();
+  // await PushAPI_chat_getGroupByName();
 }
 
-// Push Chat - Create User
+// Push Chat - PushAPI.user.create
 async function PushAPI_user_create() {
   const user = await PushAPI.user.create({
     signer: _signer,
@@ -343,78 +365,61 @@ async function PushAPI_user_create() {
 
   console.log(chalk.gray("PushAPI_user_create | Response - 200 OK"));
   console.log(user);
+
   return user;
 }
 
-// Push Chat - Get User
-async function PushAPI_user_get() {
+// Push Chat - PushAPI.user.get
+async function PushAPI_user_get(silent) {
   const user = await PushAPI.user.get({
     account: `eip155:${walletAddress}`,
     env: _env,
   });
 
   console.log(chalk.gray("PushAPI_user_get | Response - 200 OK"));
-  console.log(user);
+
+  if (!silent) {
+    console.log(user);
+  }
 }
 
-// Push Chat - Decrypt PGP Key
-async function PushAPI_chat_decryptPGPKey(pgpPvtKey) {
+// Push Chat - PushAPI.chat.decryptPGPKey
+async function PushAPI_chat_decryptPGPKey() {
+  // get user and derive encrypted PGP key
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // decrypt the PGP Key
   const pgpKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: pgpPvtKey,
+    encryptedMessage: user.encryptedPrivateKey,
     signer: _signer
   });
 
   console.log(chalk.gray("PushAPI_chat_decryptPGPKey | Response - 200 OK"));
   console.log(pgpKey);
-  return pgpKey;
 }
 
-// Push Chat - Send Message
-async function PushAPI_chat_send(pgpKey) {
-  const response = await PushAPI.chat.send({
-    messageContent,
-    messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
-    receiverAddress: walletAddressAlt2,
-    signer: _signer,
-    pgpPrivateKey: pgpKey,
+// Push Chat - PushAPI.chat.chats
+async function PushAPI_chat_chats() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
     env: _env,
   });
 
-  console.log(chalk.gray("PushAPI_chat_send | Response - 200 OK"));
-  console.log(response);
-}
-
-// Push Chat - Decrypt PGP Key
-async function PushAPI_chat_decryptPGPKey(pgpPvtKey) {
-  const pgpKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: pgpPvtKey,
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
     signer: _signer
   });
-
-  console.log(chalk.gray("PushAPI_chat_decryptPGPKey | Response - 200 OK"));
-  console.log(pgpKey);
-  return pgpKey;
-}
-
-// Push Chat - Get Requests
-async function PushAPI_chat_requests(pgpPvtKey) {
-  const response = await PushAPI.chat.requests({
-    account: walletAddress,
-    pgpPrivateKey: pgpPvtKey,
-    toDecrypt: true,
-    env: _env,
-  });
-
-  console.log(chalk.gray("PushAPI_chat_requests | Response - 200 OK"));
-  console.log(response);
-}
-
-// Push Chat - Get Chats
-async function PushAPI_chat_chats(pgpPvtKey) {
+  
+  // Actual api
   const response = await PushAPI.chat.chats({
-    account: walletAddress,
-    pgpPrivateKey: pgpPvtKey,
+    account: `eip155:${walletAddress}`,
     toDecrypt: true,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
     env: _env,
   });
 
@@ -422,46 +427,170 @@ async function PushAPI_chat_chats(pgpPvtKey) {
   console.log(response);
 }
 
-// Push Chat - Approve
-async function PushAPI_chat_approve(pgpPvtKey) {
-  const response = await PushAPI.chat.approve({
-    status: 'Approved',
-    signer: _signer,
-    senderAddress: walletAddressAlt2, // request sender address
+// Push Chat - PushAPI.chat.requests
+async function PushAPI_chat_requests() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
     env: _env,
-    pgpPrivateKey: pgpPvtKey,
   });
 
-  console.log(chalk.gray("PushAPI_chat_approve | Response - 200 OK"));
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+  
+  // Actual api
+  const response = await PushAPI.chat.requests({
+    account: `eip155:${walletAddress}`,
+    toDecrypt: true,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_requests | Response - 200 OK"));
   console.log(response);
 }
 
-// Push Chat - Conversation Hash
+// Push Chat - PushAPI.chat.conversationHash
 async function PushAPI_chat_conversationHash() {
-  const response = await PushAPI.chat.conversationHash({
-    account: walletAddress,
-    conversationId: walletAddressAlt2, // 2nd address
+  // conversation hash are also called link inside chat messages
+  const conversationHash = await PushAPI.chat.conversationHash({
+    account: `eip155:${walletAddress}`,
+    conversationId: `eip155:${walletAddressAlt2}`, // 2nd address
     env: _env,
   });
 
   console.log(chalk.gray("PushAPI_chat_conversationHash | Response - 200 OK"));
-  console.log(response);
-  return response;
+  console.log(conversationHash);
 }
 
-// Push Chat - History
-async function PushAPI_chat_history(pgpPvtKey) {
+// Push Chat - PushAPI.chat.latest
+async function PushAPI_chat_latest() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+
+  // Fetch conversation hash
+  // conversation hash are also called link inside chat messages
+  const conversationHash = await PushAPI.chat.conversationHash({
+    account: `eip155:${walletAddress}`,
+    conversationId: `eip155:${walletAddressAlt2}`, // 2nd address
+    env: _env,
+  });
+
+  // Actual API
+  const response = await PushAPI.chat.latest({
+    threadhash: conversationHash.threadHash, // get conversation hash from conversationHash function and send the response threadhash here
+    account: `eip155:${walletAddress}`,
+    toDecrypt: true,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_latest | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - PushAPI.chat.history
+async function PushAPI_chat_history() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+
+  // Fetch conversation hash
+  // conversation hash are also called link inside chat messages
+  const conversationHash = await PushAPI.chat.conversationHash({
+    account: `eip155:${walletAddress}`,
+    conversationId: `eip155:${walletAddressAlt2}`, // 2nd address
+    env: _env,
+  });
+
+  // Actual API
   const response = await PushAPI.chat.history({
-    threadhash: '', // get conversation hash from conversationHash function and send the response threadhash here
-    account: walletAddress,
-    pgpPrivateKey: pgpPvtKey,
+    threadhash: conversationHash.threadHash, // get conversation hash from conversationHash function and send the response threadhash here
+    account: `eip155:${walletAddress}`,
     limit: 5,
     toDecrypt: true,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
     env: _env,
   });
 
   console.log(chalk.gray("PushAPI_chat_history | Response - 200 OK"));
   console.log(response);
+}
+
+// Push Chat - PushAPI.chat.send
+// // Will send a message to the user or chat request in case user hasn't approved them
+async function PushAPI_chat_send() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+  
+  // Actual api
+  const response = await PushAPI.chat.send({
+    messageContent: "Gm gm! It's me... Mario",
+    messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
+    receiverAddress: walletAddressAlt3,
+    signer: _signer,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_send | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Approve
+async function PushAPI_chat_approve() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+  
+  // Actual api
+  const approve = await PushAPI.chat.approve({
+    status: 'Approved',
+    senderAddress: walletAddressAlt3, // receiver's address or chatId of a group
+    signer: _signer,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env
+  });
+
+  console.log(chalk.gray("PushAPI_chat_approve | Response - 200 OK"));
+  console.log(approve);
 }
 
 // Push Chat - Create Group
