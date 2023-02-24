@@ -36,6 +36,13 @@ const walletAddress = _signer.address;
 // generate some dummy wallets as well
 const walletAddressAlt2 = "0xCdBE6D076e05c5875D90fa35cc85694E1EAFBBd1";
 
+// dummy group data 
+const _chatId = '4d7d37f7c339e39abc67877811ad35e949b26a0a531cf0d87d6a8745c3f50755';
+const _groupName = 'Test Group';
+const _groupDescription = 'This a dunny group description';
+const _members = ['0x4dAD499341C09FCF8169ACAa98295Ba259035a10' ,'0x6f60552343f01cbfeaacDA00F6b66099b19F691D'];
+const _updatedMembers = _members.push('0x9E8aBc931C2E340d7a1B4b28d528e2fE333432d1');
+
 // test dotenv and wallet
 console.log(chalk.gray("Testing ENV file, should display wallet private key - " + process.env.WALLET_PRIVATE_KEY));
 console.log(chalk.gray("Testing Wallet addres from private key - " + walletAddress));
@@ -320,6 +327,10 @@ async function runChatUseCases() {
   await PushAPI_chat_approve(rawPGPKey);
   await PushAPI_chat_conversationHash();
   await PushAPI_chat_history(rawPGPKey);
+  await PushAPI_chat_createGroup(rawPGPKey);
+  await PushAPI_chat_updateGroup(rawPGPKey);
+  await PushAPI_chat_getGroup();
+  await PushAPI_chat_getGroupByName();
 }
 
 // Push Chat - Create User
@@ -452,6 +463,66 @@ async function PushAPI_chat_history(pgpPvtKey) {
   console.log(response);
 }
 
+// Push Chat - Create Group
+async function PushAPI_chat_createGroup(pgpPvtKey) {
+  const response = await PushAPI.chat.createGroup({
+        groupName:_groupName,
+        groupDescription:_groupDescription,
+        members: _members,
+        admins: [],
+        isPublic: true,
+        account: walletAddress,
+        env: _env,
+        pgpPrivateKey: pgpPvtKey,
+      });
+
+
+  console.log(chalk.gray("PushAPI_chat_createGroup | Response - 200 OK"));
+  console.log(response);
+}
+
+
+// Push Chat - Update Group
+async function PushAPI_chat_updateGroup(pgpPvtKey) {
+  const response = await PushAPI.chat.updateGroup({
+        groupName:_groupName,
+        groupDescription:_groupDescription,
+        members: _updatedMembers,
+        admins: [],
+        isPublic: true,
+        account: walletAddress,
+        env: _env,
+        pgpPrivateKey: pgpPvtKey,
+      });
+
+
+  console.log(chalk.gray("PushAPI_chat_updateGroup | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Get Group
+async function PushAPI_chat_getGroup() {
+  const response = await PushAPI.chat.getGroup({
+        chatId: _chatId,
+        env: _env,
+      });
+
+
+  console.log(chalk.gray("PushAPI_chat_getGroup | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - Get Group By Name
+async function PushAPI_chat_getGroupByName() {
+  const response = await PushAPI.chat.getGroupByName({
+        groupName: _groupName,
+        env: _env,
+      });
+
+
+  console.log(chalk.gray("PushAPI_chat_getGroupByName | Response - 200 OK"));
+  console.log(response);
+}
 // Master control
 // -----
 // console.log(chalk.bgYellow("All features of Push Notifications"));
