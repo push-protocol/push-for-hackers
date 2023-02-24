@@ -602,7 +602,7 @@ async function PushAPI_chat_createGroup(pgpPvtKey) {
         groupImage: _groupImage,
         admins: [],
         isPublic: true,
-        account: walletAddress,
+        signer: _signer,
         env: _env,
         pgpPrivateKey: pgpPvtKey,
       });
@@ -622,7 +622,7 @@ async function PushAPI_chat_updateGroup(pgpPvtKey) {
         groupImage: _groupImage,
         admins: [],
         isPublic: true,
-        account: walletAddress,
+        signer: _signer,
         env: _env,
         pgpPrivateKey: pgpPvtKey,
       });
