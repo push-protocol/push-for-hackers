@@ -350,6 +350,9 @@ async function runChatUseCases() {
   // console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
   // await PushAPI_chat_approve();
 
+  console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
+  await PushAPI_chat_createGroup();
+
   // await PushAPI_chat_createGroup(rawPGPKey);
   // await PushAPI_chat_updateGroup(rawPGPKey);
   // await PushAPI_chat_getGroup();
@@ -593,19 +596,32 @@ async function PushAPI_chat_approve() {
   console.log(approve);
 }
 
-// Push Chat - Create Group
-async function PushAPI_chat_createGroup(pgpPvtKey) {
+// Push Chat - PushAPI.chat.createGroup
+async function PushAPI_chat_createGroup() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+
+  // Actual API
   const response = await PushAPI.chat.createGroup({
-        groupName:_groupName,
-        groupDescription:_groupDescription,
-        members: _members,
-        groupImage: _groupImage,
-        admins: [],
-        isPublic: true,
-        signer: _signer,
-        env: _env,
-        pgpPrivateKey: pgpPvtKey,
-      });
+    groupName: 'Push Group Chat',
+    groupDescription: 'This is the oficial group for Push Protocol',
+    members: [`eip155:${walletAddress}`, `eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
+    groupImage: 'https://uploads-ssl.webflow.com/61bf814c420d049df2225c5a/634fd263f7785f51dcb79f9d_b22fe859ab3d28c370d97c4ab3d4464b1a634c8b.png',
+    admins: [`eip155:${walletAddress}`],
+    isPublic: true,
+    signer: _signer,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
 
 
   console.log(chalk.gray("PushAPI_chat_createGroup | Response - 200 OK"));
