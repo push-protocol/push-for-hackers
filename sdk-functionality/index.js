@@ -25,7 +25,7 @@ const channelAddress = "0x74415Bc4C4Bf4Baecc2DD372426F0a1D016Fa924"; // can be y
 // can be 'staging', 'prod' or 'dev' | Other values might result in incorrect responses
 // if taking these values for prod, ensure you change CAIP-10 format from eip155:5:0xAddress (GOERLI) to eip155:1:0xAddress (MAINNET) address in parameters passed
 // ensure provider matches the network id as well
-const _env = 'dev';
+const _env = 'staging';
 
 // initialize signer for whatever function it's needed for
 const provider = ethers.getDefaultProvider(5);
@@ -41,6 +41,7 @@ const walletAddressSecondAccount = _signerSecondAccount.address;
 // generate some dummy wallets as well
 const walletAddressAlt2 = "0x0F1AAC847B5720DDf01BFa07B7a8Ee641690816d";
 const walletAddressAlt3 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+const walletAddressAlt4 = "0x937Cf6ddC3080d53B3C4067B23687305371C4b3a";
 
 // dummy group data 
 const _chatId = '4d7d37f7c339e39abc67877811ad35e949b26a0a531cf0d87d6a8745c3f50755';
@@ -322,62 +323,62 @@ async function PushSDKSocket() {
 
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
-  // console.log(chalk.bgGreen.bold("PushAPI.user.create"));
-  // try {
-  //   // incase the user is already created
-  //   await PushAPI_user_create();
-  // } catch (e) {
-  //   console.log(chalk.gray("Skipping as the user might be already created"));
-  // }
+  console.log(chalk.bgGreen.bold("PushAPI.user.create"));
+  try {
+    // incase the user is already created
+    await PushAPI_user_create();
+  } catch (e) {
+    console.log(chalk.gray("Skipping as the user might be already created"));
+  }
 
-  // console.log(chalk.bgGreen.bold("PushAPI.user.get"));
-  // await PushAPI_user_get();
+  console.log(chalk.bgGreen.bold("PushAPI.user.get"));
+  await PushAPI_user_get();
 
-  // console.log(chalk.bgGreen.bold("PushAPI_chat_decryptPGPKey"));
-  // await PushAPI_chat_decryptPGPKey();
+  console.log(chalk.bgGreen.bold("PushAPI_chat_decryptPGPKey"));
+  await PushAPI_chat_decryptPGPKey();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.chats"));
-  // await PushAPI_chat_chats();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.chats"));
+  await PushAPI_chat_chats();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.requests"));
-  // await PushAPI_chat_requests();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.requests"));
+  await PushAPI_chat_requests();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.conversationHash"));
-  // await PushAPI_chat_conversationHash();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.conversationHash"));
+  await PushAPI_chat_conversationHash();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.latest"));
-  // await PushAPI_chat_latest();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.latest"));
+  await PushAPI_chat_latest();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.send"));
-  // await PushAPI_chat_send();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.send"));
+  await PushAPI_chat_send();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
-  // try {
-  //   // incase the user is already approved
-  //   await PushAPI_chat_approve();
-  // } catch (e) {
-  //   console.log(chalk.gray("Skipping as the user might already be approved"));
-  // }
+  console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
+  try {
+    // incase the user is already approved
+    await PushAPI_chat_approve();
+  } catch (e) {
+    console.log(chalk.gray("Skipping as the user might already be approved"));
+  }
   
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
-  // try {
-  //   // incase the group is already created
-  //   await PushAPI_chat_createGroup();
-  // } catch (e) {
-  //   console.log(chalk.gray("Skipping as the group might already be created"));
-  // }
+  console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
+  try {
+    // incase the group is already created
+    await PushAPI_chat_createGroup();
+  } catch (e) {
+    console.log(chalk.gray("Skipping as the group might already be created"));
+  }
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.updateGroup"));
-  // await PushAPI_chat_updateGroup();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.updateGroup"));
+  await PushAPI_chat_updateGroup();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroupByName"));
-  // await PushAPI_chat_getGroupByName();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.getGroupByName"));
+  await PushAPI_chat_getGroupByName();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroup"));
-  // await PushAPI_chat_getGroup();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.getGroup"));
+  await PushAPI_chat_getGroup();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.decryptConversation"));
-  // await PushAPI_chat_decryptConversation();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.decryptConversation"));
+  await PushAPI_chat_decryptConversation();
 
   console.log(chalk.bgGreen.bold("Push Chat - PushSDKSocket()"));
   await PushChatSDKSocket();
@@ -435,7 +436,7 @@ async function PushAPI_chat_chats() {
     account: `eip155:${walletAddress}`,
     env: _env,
   });
-
+  
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
     encryptedPGPPrivateKey: user.encryptedPrivateKey,
@@ -672,9 +673,9 @@ async function PushAPI_chat_updateGroup() {
   // Why so? To ensure that verificationProof always is able to replicate the current group info (trustless since signature is stored with the info)
   const response = await PushAPI.chat.updateGroup({
     chatId: '870cbb20f0b116d5e461a154dc723dc1485976e97f61a673259698aa7f48371c',
-    groupName: 'Push Group Chat v2',
-    groupDescription: 'This is the edited oficial group for Push Protocol',
-    members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
+    groupName: 'Push Group Chat 3',
+    groupDescription: 'This is the oficial group for Push Protocol',
+    members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`, `eip155:${walletAddressAlt4}`],
     groupImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==',
     admins: [`eip155:${walletAddress}`], // takes _signer as admin automatically, add more if you want to
     isPublic: true,
@@ -744,22 +745,23 @@ async function PushAPI_chat_decryptConversation() {
   // Decrypted Chat
   const decryptedChat = await PushAPI.chat.decryptConversation({
     messages: encryptedChats, // array of message object fetched from chat.history method
-    connectedUser, // user meta data object fetched from chat.get method
-    pgpPrivateKey:decryptedPvtKey, //decrypted private key
-    env:'staging',
+    connectedUser: user, // user meta data object fetched from chat.get method
+    pgpPrivateKey: pgpDecrpyptedPvtKey, //decrypted private key
+    env: _env,
   });
+
+  console.log(chalk.gray("PushAPI_chat_decryptConversation | Response - 200 OK"));
+  console.log(decryptedChat);
 }
 
 // Push Chat - Socket Connection
 async function PushChatSDKSocket() {
   const pushSDKSocket = createSocketConnection({
-    user: `eip155:5:${walletAddress}`, // CAIP, see below
-    env: _env,
+    user: `eip155:${walletAddress}`, // CAIP, see below
     socketType: 'chat',
-    socketOptions: { autoConnect: true, reconnectionAttempts: 3 }
+    socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
+    env: _env
   });
-
-  pushSDKSocket.connect();
 
   pushSDKSocket.on(EVENTS.CONNECT, async () => {
     console.log(chalk.gray("Socket Connected - will disconnect after 4 seconds"));
@@ -778,7 +780,7 @@ async function PushChatSDKSocket() {
     });
 
     // Actual api
-    const response = await PushAPI.chat.send({
+   const response = await PushAPI.chat.send({
       messageContent: "Gm gm! It's me... Mario",
       messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
       receiverAddress: `eip155:${walletAddress}`,
@@ -786,6 +788,7 @@ async function PushChatSDKSocket() {
       pgpPrivateKey: pgpDecrpyptedPvtKey,
       env: _env,
     });
+    console.log(chalk.gray("PushAPI_chat_send | Response - 200 OK"));
   });
 
   pushSDKSocket.on(EVENTS.DISCONNECT, () => {
@@ -807,10 +810,10 @@ async function PushChatSDKSocket() {
 
 // Master control
 // -----
-// console.log(chalk.bgYellow("All features of Push Notifications"));
-// await runNotificaitonsUseCases();
+console.log(chalk.bgYellow("All features of Push Notifications"));
+await runNotificaitonsUseCases();
 
-// console.log(chalk.bgYellow("\nAll features of Push Chat"));
+console.log(chalk.bgYellow("\nAll features of Push Chat"));
 await runChatUseCases();
 
 console.log(chalk.bgBlue.white.bold("SDK FUNCTIONALITIES END"));
