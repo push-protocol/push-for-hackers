@@ -347,11 +347,11 @@ async function runChatUseCases() {
   // console.log(chalk.bgGreen.bold("PushAPI.chat.send"));
   // await PushAPI_chat_send();
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
-  // await PushAPI_chat_approve();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
+  await PushAPI_chat_approve();
 
-  console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
-  await PushAPI_chat_createGroup();
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
+  // await PushAPI_chat_createGroup();
 
   // await PushAPI_chat_createGroup(rawPGPKey);
   // await PushAPI_chat_updateGroup(rawPGPKey);
@@ -363,7 +363,7 @@ async function runChatUseCases() {
 async function PushAPI_user_create() {
   const user = await PushAPI.user.create({
     signer: _signer,
-    env: _env,
+    env: _env
   });
 
   console.log(chalk.gray("PushAPI_user_create | Response - 200 OK"));
@@ -376,7 +376,7 @@ async function PushAPI_user_create() {
 async function PushAPI_user_get(silent) {
   const user = await PushAPI.user.get({
     account: `eip155:${walletAddress}`,
-    env: _env,
+    env: _env
   });
 
   console.log(chalk.gray("PushAPI_user_get | Response - 200 OK"));
@@ -611,18 +611,18 @@ async function PushAPI_chat_createGroup() {
   });
 
   // Actual API
+  // Convert image to base 64 and pass
   const response = await PushAPI.chat.createGroup({
     groupName: 'Push Group Chat',
     groupDescription: 'This is the oficial group for Push Protocol',
-    members: [`eip155:${walletAddress}`, `eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
-    groupImage: 'https://uploads-ssl.webflow.com/61bf814c420d049df2225c5a/634fd263f7785f51dcb79f9d_b22fe859ab3d28c370d97c4ab3d4464b1a634c8b.png',
-    admins: [`eip155:${walletAddress}`],
+    members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
+    groupImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==',
+    admins: [],
     isPublic: true,
     signer: _signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
     env: _env,
   });
-
 
   console.log(chalk.gray("PushAPI_chat_createGroup | Response - 200 OK"));
   console.log(response);
@@ -631,18 +631,30 @@ async function PushAPI_chat_createGroup() {
 
 // Push Chat - Update Group
 async function PushAPI_chat_updateGroup(pgpPvtKey) {
-  const response = await PushAPI.chat.updateGroup({
-        groupName:_groupName,
-        groupDescription:_groupDescription,
-        members: _updatedMembers,
-        groupImage: _groupImage,
-        admins: [],
-        isPublic: true,
-        signer: _signer,
-        env: _env,
-        pgpPrivateKey: pgpPvtKey,
-      });
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
 
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedMessage: user.encryptedPrivateKey,
+    signer: _signer
+  });
+
+  // Actual API
+  const response = await PushAPI.chat.updateGroup({
+    groupName: 'Push Group Chat v2',
+    groupDescription: 'This is the edited oficial group for Push Protocol',
+    members: _updatedMembers,
+    groupImage: _groupImage,
+    admins: [],
+    isPublic: true,
+    signer: _signer,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
 
   console.log(chalk.gray("PushAPI_chat_updateGroup | Response - 200 OK"));
   console.log(response);
