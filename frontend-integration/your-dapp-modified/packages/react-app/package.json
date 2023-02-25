@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
-    "@epnsproject/sdk-restapi": "^0.1.20",
+    "@pushprotocol/restapi": "^0.1.1",
     "@ethersproject/contracts": "^5.6.0",
     "@ethersproject/providers": "^5.6.0",
     "@my-app/contracts": "^1.0.0",
@@ -44,6 +44,7 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "ipfs": "yarn build && ipfs-deploy build/",
+    "start-legacy": "react-scripts --openssl-legacy-provider start",
     "start": "react-scripts start",
     "test": "react-scripts test"
   }

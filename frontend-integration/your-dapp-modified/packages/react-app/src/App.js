@@ -9,7 +9,7 @@ import logo from "./ethereumLogo.png";
 import { abis, addresses } from "@my-app/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
 
-import * as EpnsAPI from "@epnsproject/sdk-restapi";
+import * as PushAPI from "@pushprotocol/restapi";
 
 function WalletButton() {
   const [rendered, setRendered] = useState("");
@@ -63,12 +63,12 @@ function App() {
   const { loading, error: subgraphQueryError, data } = useQuery(GET_TRANSFERS);
 
   // Getting Channel Details
-  const yourChannel = '0xE8793A14bb05C2aA94ff304CfAA1B2e7823912C8';
+  const yourChannel = '0xD8634C39BBFd4033c0d3289C4515275102423681';
   const [ channelDetails, setChannelDetails ] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await EpnsAPI.channels.getChannel({
-        channel: `eip155:42:${yourChannel}`, // channel address in CAIP
+      const data = await PushAPI.channels.getChannel({
+        channel: `eip155:5:${yourChannel}`, // channel address in CAIP
         env: 'staging'
       });
 
@@ -87,7 +87,7 @@ function App() {
   const [ userDetail, setUserDetail ] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await EpnsAPI.user.getSubscriptions({
+      const data = await PushAPI.user.getSubscriptions({
         user: account, // user address in CAIP or in address if defaulting to Ethereum
         env: 'staging'
       });
@@ -149,10 +149,10 @@ function App() {
               
               if (channelOptStatus) {
                 // user subscribed, unsubscribe them
-                await EpnsAPI.channels.unsubscribe({
+                await PushAPI.channels.unsubscribe({
                   signer: library.getSigner(),
-                  channelAddress: `eip155:42:${yourChannel}`, // channel address in CAIP
-                  userAddress: `eip155:42:${account}`, // user address in CAIP
+                  channelAddress: `eip155:5:${yourChannel}`, // channel address in CAIP
+                  userAddress: `eip155:5:${account}`, // user address in CAIP
                   onSuccess: () => {
                     setChannelOptStatus(!channelOptStatus);
                   },
@@ -164,10 +164,10 @@ function App() {
               }
               else {
                 // user unsubscribed, subscribe them
-                await EpnsAPI.channels.subscribe({
+                await PushAPI.channels.subscribe({
                   signer: library.getSigner(),
-                  channelAddress: `eip155:42:${yourChannel}`, // channel address in CAIP
-                  userAddress: `eip155:42:${account}`, // user address in CAIP
+                  channelAddress: `eip155:5:${yourChannel}`, // channel address in CAIP
+                  userAddress: `eip155:5:${account}`, // user address in CAIP
                   onSuccess: () => {
                   console.log('opt in success');
                     setChannelOptStatus(!channelOptStatus);

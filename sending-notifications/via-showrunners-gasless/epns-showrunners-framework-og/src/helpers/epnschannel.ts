@@ -5,7 +5,7 @@ import { Logger } from 'winston';
 import config from '../config';
 import showrunnersHelper from './showrunnersHelper';
 // import { NotificationDetailsModel, INotificationDetails } from '../showrunners/monitoring/monitoringModel';
-import * as EpnsAPI from '@epnsproject/sdk-restapi';
+import * as PushAPI from "@pushprotocol/restapi";
 import { AccountId } from 'caip';
 
 export interface ChannelSettings {
@@ -85,7 +85,7 @@ export class EPNSChannel {
       pk: walletKeyMeta.pk,
       chainId: walletKeyMeta.chainId,
       wallet: wallet,
-      caip10: this.getCAIPAddress('eip155', config.showrunnersEnv === 'prod' ? 1 : 42, wallet)
+      caip10: this.getCAIPAddress('eip155', config.showrunnersEnv === 'prod' ? 1 : 5, wallet)
     }
 
     console.log(walletKeyObject);
@@ -158,7 +158,7 @@ export class EPNSChannel {
       caipRecipients = [];
       
       recipients.forEach((add: string) => {
-        caipRecipients.push(this.getCAIPAddress('eip155', config.showrunnersEnv === 'prod' ? 1 : 42, add));
+        caipRecipients.push(this.getCAIPAddress('eip155', config.showrunnersEnv === 'prod' ? 1 : 5, add));
       });
     }
 
@@ -200,7 +200,7 @@ export class EPNSChannel {
         apiResponsePayload["recipients"] = caipRecipients;
       }
       
-      const apiResponse = await EpnsAPI.payloads.sendNotification(apiResponsePayload);
+      const apiResponse = await PushAPI.payloads.sendNotification(apiResponsePayload);
       if (apiResponse?.status === 204) {
         this.logInfo('Notification sent successfully!');
       }
@@ -251,10 +251,10 @@ export class EPNSChannel {
       const caipRecipients = [];
       if (params.notificationType === 4 && Array.isArray(params.recipient)) {
         params.recipient.forEach((add) => {
-          caipRecipients.push(this.getCAIPAddress('eip155', config.showrunnersEnv === 'staging' ? 42 : 1, add));
+          caipRecipients.push(this.getCAIPAddress('eip155', config.showrunnersEnv === 'staging' ? 5 : 1, add));
         });
       }
-      const notificationPayload = await EpnsAPI.payloads.sendNotification({
+      const notificationPayload = await PushAPI.payloads.sendNotification({
         signer,
         type: params.notificationType,
         identityType: 2, // direct payload
@@ -268,10 +268,10 @@ export class EPNSChannel {
           cta: params?.cta ?? this.cSettings?.url,
           img: params.image,
         },
-        channel: this.getCAIPAddress('eip155', 42, this.channelAddress),
+        channel: this.getCAIPAddress('eip155', 5, this.channelAddress),
         recipients: caipRecipients.length
           ? caipRecipients
-          : this.getCAIPAddress('eip155', config.showrunnersEnv === 'staging' ? 42 : 1, params.recipient), // your channel address
+          : this.getCAIPAddress('eip155', config.showrunnersEnv === 'staging' ? 5 : 1, params.recipient), // your channel address
         env: config.showrunnersEnv,
       });
 

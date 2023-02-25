@@ -34,7 +34,7 @@
   "homepage": "https://github.com/ethereum-push-notification-system/epns-push-register-service#readme",
   "dependencies": {
     "@arbitrum/sdk": "^1.1.0",
-    "@epnsproject/sdk-restapi": "^0.1.20",
+    "@pushprotocol/restapi": "^0.1.1",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@injectivelabs/derivatives-consumer": "^0.5.1",
