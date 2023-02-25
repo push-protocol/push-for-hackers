@@ -25,7 +25,7 @@ const channelAddress = "0x74415Bc4C4Bf4Baecc2DD372426F0a1D016Fa924"; // can be y
 // can be 'staging', 'prod' or 'dev' | Other values might result in incorrect responses
 // if taking these values for prod, ensure you change CAIP-10 format from eip155:5:0xAddress (GOERLI) to eip155:1:0xAddress (MAINNET) address in parameters passed
 // ensure provider matches the network id as well
-const _env = 'staging';
+const _env = 'dev';
 
 // initialize signer for whatever function it's needed for
 const provider = ethers.getDefaultProvider(5);
@@ -91,7 +91,7 @@ async function runNotificaitonsUseCases() {
   console.log(chalk.bgGreen.bold("PushAPI.channels._getSubscribers()"));
   await PushAPI_channels_getSubscribers();
 
-  console.log(chalk.bgGreen.bold("PushSDKSocket()"));
+  console.log(chalk.bgGreen.bold("Push Notification - PushSDKSocket()"));
   await PushSDKSocket();
 }
 
@@ -320,7 +320,6 @@ async function PushSDKSocket() {
   await delay(4000);
 }
 
-
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
   // console.log(chalk.bgGreen.bold("PushAPI.user.create"));
@@ -360,22 +359,28 @@ async function runChatUseCases() {
   //   console.log(chalk.gray("Skipping as the user might already be approved"));
   // }
   
-  console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
-  try {
-    // incase the group is already created
-    await PushAPI_chat_createGroup();
-  } catch (e) {
-    console.log(chalk.gray("Skipping as the group might already be created"));
-  }
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
+  // try {
+  //   // incase the group is already created
+  //   await PushAPI_chat_createGroup();
+  // } catch (e) {
+  //   console.log(chalk.gray("Skipping as the group might already be created"));
+  // }
 
-  console.log(chalk.bgGreen.bold("PushAPI.chat.updateGroup"));
-  await PushAPI_chat_updateGroup();
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.updateGroup"));
+  // await PushAPI_chat_updateGroup();
 
   // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroupByName"));
   // await PushAPI_chat_getGroupByName();
 
   // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroup"));
   // await PushAPI_chat_getGroup();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.decryptConversation"));
+  // await PushAPI_chat_decryptConversation();
+
+  console.log(chalk.bgGreen.bold("Push Chat - PushSDKSocket()"));
+  await PushChatSDKSocket();
 }
 
 // Push Chat - PushAPI.user.create
@@ -670,8 +675,8 @@ async function PushAPI_chat_updateGroup() {
     groupName: 'Push Group Chat v2',
     groupDescription: 'This is the edited oficial group for Push Protocol',
     members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
-    groupImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==",
-    admins: [], // takes _signer as admin automatically, add more if you want to
+    groupImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==',
+    admins: [`eip155:${walletAddress}`], // takes _signer as admin automatically, add more if you want to
     isPublic: true,
     signer: _signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
@@ -702,6 +707,102 @@ async function PushAPI_chat_getGroup() {
 
   console.log(chalk.gray("PushAPI_chat_getGroup | Response - 200 OK"));
   console.log(response);
+}
+
+// Push Chat - PushAPI.chat.decryptConversation
+async function PushAPI_chat_decryptConversation() {
+  // Fetch user
+  const user = await PushAPI.user.get({
+    account: `eip155:${walletAddress}`,
+    env: _env,
+  });
+
+  // Decrypt PGP Key
+  const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
+    signer: _signer
+  });
+
+  // Fetch conversation hash
+  // conversation hash are also called link inside chat messages
+  const conversationHash = await PushAPI.chat.conversationHash({
+    account: `eip155:${walletAddress}`,
+    conversationId: `eip155:${walletAddressAlt2}`, // 2nd address
+    env: _env,
+  });
+
+  // Chat History
+  const encryptedChats = await PushAPI.chat.history({
+    threadhash: conversationHash.threadHash, // get conversation hash from conversationHash function and send the response threadhash here
+    account: `eip155:${walletAddress}`,
+    limit: 5,
+    toDecrypt: false,
+    pgpPrivateKey: pgpDecrpyptedPvtKey,
+    env: _env,
+  });
+  
+  // Decrypted Chat
+  const decryptedChat = await PushAPI.chat.decryptConversation({
+    messages: encryptedChats, // array of message object fetched from chat.history method
+    connectedUser, // user meta data object fetched from chat.get method
+    pgpPrivateKey:decryptedPvtKey, //decrypted private key
+    env:'staging',
+  });
+}
+
+// Push Chat - Socket Connection
+async function PushChatSDKSocket() {
+  const pushSDKSocket = createSocketConnection({
+    user: `eip155:5:${walletAddress}`, // CAIP, see below
+    env: _env,
+    socketType: 'chat',
+    socketOptions: { autoConnect: true, reconnectionAttempts: 3 }
+  });
+
+  pushSDKSocket.connect();
+
+  pushSDKSocket.on(EVENTS.CONNECT, async () => {
+    console.log(chalk.gray("Socket Connected - will disconnect after 4 seconds"));
+
+    // send a chat from other wallet to this one to see the result 
+    // Fetch user
+    const user = await PushAPI.user.get({
+      account: `eip155:${walletAddressSecondAccount}`,
+      env: _env,
+    });
+
+    // Decrypt PGP Key
+    const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+      encryptedPGPPrivateKey: user.encryptedPrivateKey,
+      signer: _signerSecondAccount
+    });
+
+    // Actual api
+    const response = await PushAPI.chat.send({
+      messageContent: "Gm gm! It's me... Mario",
+      messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
+      receiverAddress: `eip155:${walletAddress}`,
+      signer: _signerSecondAccount,
+      pgpPrivateKey: pgpDecrpyptedPvtKey,
+      env: _env,
+    });
+  });
+
+  pushSDKSocket.on(EVENTS.DISCONNECT, () => {
+    console.log(chalk.gray("Socket Disconnected"));
+  });
+
+  pushSDKSocket.on(EVENTS.CHAT_RECEIVED_MESSAGE, (message) => {
+    // feedItem is the notification data when that notification was received
+    console.log(chalk.gray("Incoming Push Chat message from Socket"));
+    console.log(message);
+
+    // disconnect socket after this, not to be done in real implementations
+    pushSDKSocket.disconnect();
+  });
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+  await delay(4000);
 }
 
 // Master control
