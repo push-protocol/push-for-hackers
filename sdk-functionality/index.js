@@ -19,12 +19,13 @@ console.log(chalk.bgBlue.white.bold("SDK FUNCTIONALITIES"));
 
 // setting wallet params
 const walletPrivateKey = process.env.WALLET_PRIVATE_KEY;
+const walletPrivateKeySecondAccount = process.env.WALLET_PRIVATE_KEY2;
 const channelAddress = "0x74415Bc4C4Bf4Baecc2DD372426F0a1D016Fa924"; // can be your wallet address as well if you own a channel
 
 // can be 'staging', 'prod' or 'dev' | Other values might result in incorrect responses
 // if taking these values for prod, ensure you change CAIP-10 format from eip155:5:0xAddress (GOERLI) to eip155:1:0xAddress (MAINNET) address in parameters passed
 // ensure provider matches the network id as well
-const _env = 'staging'; 
+const _env = 'staging';
 
 // initialize signer for whatever function it's needed for
 const provider = ethers.getDefaultProvider(5);
@@ -32,6 +33,10 @@ const provider = ethers.getDefaultProvider(5);
 const Pkey = `0x${walletPrivateKey}`;
 const _signer = new ethers.Wallet(Pkey, provider);
 const walletAddress = _signer.address;
+
+const PkeySecondAccount = `0x${walletPrivateKeySecondAccount}`;
+const _signerSecondAccount = new ethers.Wallet(PkeySecondAccount, provider);
+const walletAddressSecondAccount = _signerSecondAccount.address;
 
 // generate some dummy wallets as well
 const walletAddressAlt2 = "0x0F1AAC847B5720DDf01BFa07B7a8Ee641690816d";
@@ -41,7 +46,7 @@ const walletAddressAlt3 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 const _chatId = '4d7d37f7c339e39abc67877811ad35e949b26a0a531cf0d87d6a8745c3f50755';
 const _groupName = 'Test Group';
 const _groupDescription = 'This a dunny group description';
-const _members = ['0x4dAD499341C09FCF8169ACAa98295Ba259035a10' ,'0x6f60552343f01cbfeaacDA00F6b66099b19F691D'];
+const _members = ['0x4dAD499341C09FCF8169ACAa98295Ba259035a10', '0x6f60552343f01cbfeaacDA00F6b66099b19F691D'];
 const _updatedMembers = _members.push('0x9E8aBc931C2E340d7a1B4b28d528e2fE333432d1');
 const _groupImage = 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fd%2Fd0%2FEth-diamond-rainbow.png&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FEthereum&tbnid=S9BLdj9exV77pM&vet=12ahUKEwjVqKrBsK39AhU8IbcAHf9gDK8QMygAegUIARDeAQ..i&docid=CJMg0dCzhmN_kM&w=1920&h=3201&q=eth&ved=2ahUKEwjVqKrBsK39AhU8IbcAHf9gDK8QMygAegUIARDeAQ';
 
@@ -155,7 +160,7 @@ async function PushAPI_channels_subscribe() {
     channelAddress: `eip155:5:${channelAddress}`, // channel address in CAIP
     userAddress: `eip155:5:${walletAddress}`, // user address in CAIP
     onSuccess: () => {
-     console.log('opt in success');
+      console.log('opt in success');
     },
     onError: () => {
       console.error('opt in error');
@@ -174,7 +179,7 @@ async function PushAPI_channels_unsubscribe() {
     channelAddress: `eip155:5:${channelAddress}`, // channel address in CAIP
     userAddress: `eip155:5:${walletAddress}`, // user address in CAIP
     onSuccess: () => {
-     console.log('opt out success');
+      console.log('opt out success');
     },
     onError: () => {
       console.error('opt out error');
@@ -293,15 +298,15 @@ async function PushSDKSocket() {
 
   pushSDKSocket.on(EVENTS.CONNECT, async () => {
     console.log(chalk.gray("Socket Connected - will disconnect after 4 seconds"));
-    
+
     // send a notification to see the result 
     await PushAPI_payloads_sendNotification__direct_payload_single_recipient(true);
   });
-  
+
   pushSDKSocket.on(EVENTS.DISCONNECT, () => {
     console.log(chalk.gray("Socket Disconnected"));
   });
-  
+
   pushSDKSocket.on(EVENTS.USER_FEEDS, (feedItem) => {
     // feedItem is the notification data when that notification was received
     console.log(chalk.gray("Incoming Feed from Socket"));
@@ -347,16 +352,30 @@ async function runChatUseCases() {
   // console.log(chalk.bgGreen.bold("PushAPI.chat.send"));
   // await PushAPI_chat_send();
 
-  console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
-  await PushAPI_chat_approve();
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.approve"));
+  // try {
+  //   // incase the user is already approved
+  //   await PushAPI_chat_approve();
+  // } catch (e) {
+  //   console.log(chalk.gray("Skipping as the user might already be approved"));
+  // }
+  
+  console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
+  try {
+    // incase the group is already created
+    await PushAPI_chat_createGroup();
+  } catch (e) {
+    console.log(chalk.gray("Skipping as the group might already be created"));
+  }
 
-  // console.log(chalk.bgGreen.bold("PushAPI.chat.createGroup"));
-  // await PushAPI_chat_createGroup();
+  console.log(chalk.bgGreen.bold("PushAPI.chat.updateGroup"));
+  await PushAPI_chat_updateGroup();
 
-  // await PushAPI_chat_createGroup(rawPGPKey);
-  // await PushAPI_chat_updateGroup(rawPGPKey);
-  // await PushAPI_chat_getGroup();
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroupByName"));
   // await PushAPI_chat_getGroupByName();
+
+  // console.log(chalk.bgGreen.bold("PushAPI.chat.getGroup"));
+  // await PushAPI_chat_getGroup();
 }
 
 // Push Chat - PushAPI.user.create
@@ -396,7 +415,7 @@ async function PushAPI_chat_decryptPGPKey() {
 
   // decrypt the PGP Key
   const pgpKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
 
@@ -414,10 +433,10 @@ async function PushAPI_chat_chats() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
-  
+
   // Actual api
   const response = await PushAPI.chat.chats({
     account: `eip155:${walletAddress}`,
@@ -440,10 +459,10 @@ async function PushAPI_chat_requests() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
-  
+
   // Actual api
   const response = await PushAPI.chat.requests({
     account: `eip155:${walletAddress}`,
@@ -479,7 +498,7 @@ async function PushAPI_chat_latest() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
 
@@ -514,7 +533,7 @@ async function PushAPI_chat_history() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
 
@@ -551,15 +570,15 @@ async function PushAPI_chat_send() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
-  
+
   // Actual api
   const response = await PushAPI.chat.send({
     messageContent: "Gm gm! It's me... Mario",
     messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF" 
-    receiverAddress: walletAddressAlt3,
+    receiverAddress: walletAddressSecondAccount,
     signer: _signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
     env: _env,
@@ -573,21 +592,21 @@ async function PushAPI_chat_send() {
 async function PushAPI_chat_approve() {
   // Fetch user
   const user = await PushAPI.user.get({
-    account: `eip155:${walletAddress}`,
+    account: `eip155:${walletAddressSecondAccount}`,
     env: _env,
   });
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
-    signer: _signer
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
+    signer: _signerSecondAccount
   });
-  
+
   // Actual api
   const approve = await PushAPI.chat.approve({
     status: 'Approved',
-    senderAddress: walletAddressAlt3, // receiver's address or chatId of a group
-    signer: _signer,
+    senderAddress: walletAddress, // receiver's address or chatId of a group
+    signer: _signerSecondAccount,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
     env: _env
   });
@@ -606,18 +625,18 @@ async function PushAPI_chat_createGroup() {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
 
   // Actual API
   // Convert image to base 64 and pass
   const response = await PushAPI.chat.createGroup({
-    groupName: 'Push Group Chat',
+    groupName: 'Push Group Chat 3',
     groupDescription: 'This is the oficial group for Push Protocol',
     members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
     groupImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==',
-    admins: [],
+    admins: [], // takes _signer as admin automatically, add more if you want to
     isPublic: true,
     signer: _signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
@@ -628,9 +647,8 @@ async function PushAPI_chat_createGroup() {
   console.log(response);
 }
 
-
-// Push Chat - Update Group
-async function PushAPI_chat_updateGroup(pgpPvtKey) {
+// Push Chat - PushAPI.chat.updateGroup
+async function PushAPI_chat_updateGroup() {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${walletAddress}`,
@@ -639,17 +657,21 @@ async function PushAPI_chat_updateGroup(pgpPvtKey) {
 
   // Decrypt PGP Key
   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-    encryptedMessage: user.encryptedPrivateKey,
+    encryptedPGPPrivateKey: user.encryptedPrivateKey,
     signer: _signer
   });
 
   // Actual API
+  // Convert image to base 64 and pass
+  // This is an idempotent operation, meaning it requires all group info to be passed no matter if only few things change
+  // Why so? To ensure that verificationProof always is able to replicate the current group info (trustless since signature is stored with the info)
   const response = await PushAPI.chat.updateGroup({
+    chatId: '870cbb20f0b116d5e461a154dc723dc1485976e97f61a673259698aa7f48371c',
     groupName: 'Push Group Chat v2',
     groupDescription: 'This is the edited oficial group for Push Protocol',
-    members: _updatedMembers,
-    groupImage: _groupImage,
-    admins: [],
+    members: [`eip155:${walletAddressAlt2}`, `eip155:${walletAddressAlt3}`],
+    groupImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==",
+    admins: [], // takes _signer as admin automatically, add more if you want to
     isPublic: true,
     signer: _signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
@@ -660,29 +682,28 @@ async function PushAPI_chat_updateGroup(pgpPvtKey) {
   console.log(response);
 }
 
-// Push Chat - Get Group
+// Push Chat - PushAPI.chat.getGroupByName
+async function PushAPI_chat_getGroupByName() {
+  const response = await PushAPI.chat.getGroupByName({
+    groupName: "Push Group Chat 3",
+    env: _env,
+  });
+
+  console.log(chalk.gray("PushAPI_chat_getGroupByName | Response - 200 OK"));
+  console.log(response);
+}
+
+// Push Chat - PushAPI.chat.getGroup
 async function PushAPI_chat_getGroup() {
   const response = await PushAPI.chat.getGroup({
-        chatId: _chatId,
-        env: _env,
-      });
-
+    chatId: '870cbb20f0b116d5e461a154dc723dc1485976e97f61a673259698aa7f48371c',
+    env: _env,
+  });
 
   console.log(chalk.gray("PushAPI_chat_getGroup | Response - 200 OK"));
   console.log(response);
 }
 
-// Push Chat - Get Group By Name
-async function PushAPI_chat_getGroupByName() {
-  const response = await PushAPI.chat.getGroupByName({
-        groupName: _groupName,
-        env: _env,
-      });
-
-
-  console.log(chalk.gray("PushAPI_chat_getGroupByName | Response - 200 OK"));
-  console.log(response);
-}
 // Master control
 // -----
 // console.log(chalk.bgYellow("All features of Push Notifications"));
