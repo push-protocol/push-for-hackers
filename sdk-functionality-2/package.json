@@ -1,0 +1,20 @@
+{
+  "name": "sdk-functionality-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pushprotocol/restapi": "^1.0.4",
+    "@pushprotocol/socket": "^0.4.2",
+    "chalk": "^5.2.0",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.6",
+    "unique-names-generator": "^4.7.1"
+  }
+}
