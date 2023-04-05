@@ -1,16 +1,19 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
 import * as PushAPI from "@pushprotocol/restapi";
-import { createSocketConnection, EVENTS } from '@pushprotocol/socket'
-import { ethers } from "ethers";
 import { ENV } from '@pushprotocol/restapi/src/lib/constants';
-import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
+import { createSocketConnection, EVENTS } from '@pushprotocol/socket';
+import * as dotenv from 'dotenv';
+import { ethers } from "ethers";
+import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
+dotenv.config();
+
+// CONFIGS
+const env = process.env.PUSH_NODE_NETWORK; // choose ENV.STAGING or ENV.PROD
+const showAPIResponse = true; // choose to show or hide API responses
 
 // If you own a channel, you can use your channel address as well
-const channelPrivateKey: string = process.env.CHANNEL_PRIVATE_KEY!
+const channelPrivateKey: string = process.env.WALLET_PRIVATE_KEY!
 const signerChannel = new ethers.Wallet(`0x${channelPrivateKey}`)
 const channelAddress = signerChannel.address
-const env = ENV.STAGING;
 
 // Addresses that will be used to 
 const signer = ethers.Wallet.createRandom()
@@ -26,23 +29,16 @@ const groupName = uniqueNamesGenerator({ dictionaries: [adjectives, colors, anim
 const groupDescription = uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals] }) 
 const groupImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVR4AcXBsW2FMBiF0Y8r3GQb6jeBxRauYRpo4yGQkMd4A7kg7Z/GUfSKe8703fKDkTATZsJsrr0RlZSJ9r4RLayMvLmJjnQS1d6IhJkwE2bT13U/DBzp5BN73xgRZsJMmM1HOolqb/yWiWpvjJSUiRZWopIykTATZsJs5g+1N6KSMiO1N/5DmAkzYTa9Lh6MhJkwE2ZzSZlo7xvRwson3txERzqJhJkwE2bT6+JhoKTMJ2pvjAgzYSbMfgDlXixqjH6gRgAAAABJRU5ErkJggg==';
 
-console.log(`
-███████ ██████  ██   ██     ███████ ██    ██ ███    ██  ██████ ████████ ██  ██████  ███    ██  █████  ██      ██ ████████ ██    ██ 
-██      ██   ██ ██  ██      ██      ██    ██ ████   ██ ██         ██    ██ ██    ██ ████   ██ ██   ██ ██      ██    ██     ██  ██  
-███████ ██   ██ █████       █████   ██    ██ ██ ██  ██ ██         ██    ██ ██    ██ ██ ██  ██ ███████ ██      ██    ██      ████   
-     ██ ██   ██ ██  ██      ██      ██    ██ ██  ██ ██ ██         ██    ██ ██    ██ ██  ██ ██ ██   ██ ██      ██    ██       ██    
-███████ ██████  ██   ██     ██       ██████  ██   ████  ██████    ██    ██  ██████  ██   ████ ██   ██ ███████ ██    ██       ██    
-                                                                                                                                   
-`);
 
 // Push Notification - Run Notifications Use cases
 async function runNotificaitonsUseCases() {
+
 console.log(`
-███    ██  ██████  ████████ ██ ███████ ██  ██████  █████  ████████ ██  ██████  ███    ██ ███████ 
-████   ██ ██    ██    ██    ██ ██      ██ ██      ██   ██    ██    ██ ██    ██ ████   ██ ██      
-██ ██  ██ ██    ██    ██    ██ █████   ██ ██      ███████    ██    ██ ██    ██ ██ ██  ██ ███████ 
-██  ██ ██ ██    ██    ██    ██ ██      ██ ██      ██   ██    ██    ██ ██    ██ ██  ██ ██      ██ 
-██   ████  ██████     ██    ██ ██      ██  ██████ ██   ██    ██    ██  ██████  ██   ████ ███████ 
+  ███    ██  ██████  ████████ ██ ███████ ██  ██████  █████  ████████ ██  ██████  ███    ██ ███████ 
+  ████   ██ ██    ██    ██    ██ ██      ██ ██      ██   ██    ██    ██ ██    ██ ████   ██ ██      
+  ██ ██  ██ ██    ██    ██    ██ █████   ██ ██      ███████    ██    ██ ██    ██ ██ ██  ██ ███████ 
+  ██  ██ ██ ██    ██    ██    ██ ██      ██ ██      ██   ██    ██    ██ ██    ██ ██  ██ ██      ██ 
+  ██   ████  ██████     ██    ██ ██      ██  ██████ ██   ██    ██    ██  ██████  ██   ████ ███████ 
 `);
   console.log("PushAPI.user.getFeeds");
   await PushAPI_user_getFeeds();
@@ -84,10 +80,10 @@ console.log(`
 }
 
 // Push Notification - PushAPI.user.getFeeds
-async function PushAPI_user_getFeeds(silent: boolean = true) {
+async function PushAPI_user_getFeeds(silent: boolean = !showAPIResponse) {
   const notifications = await PushAPI.user.getFeeds({
     user: `eip155:5:${signer.address}`, // user address in CAIP
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI.user.getFeeds | Response - 200 OK')
@@ -97,11 +93,11 @@ async function PushAPI_user_getFeeds(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.user.getFeeds - Spam
-async function PushAPI_user_getFeeds__spam(silent: boolean = true) {
+async function PushAPI_user_getFeeds__spam(silent: boolean = !showAPIResponse) {
   const notifications = await PushAPI.user.getFeeds({
     user: `eip155:5:${signer.address}`, // user address in CAIP
     spam: true,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI.user.getFeeds [Spam] | Response - 200 OK')
@@ -111,10 +107,10 @@ async function PushAPI_user_getFeeds__spam(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.user.getSubscriptions
-async function PushAPI_user_getSubscriptions(silent: boolean = true) {
+async function PushAPI_user_getSubscriptions(silent: boolean = !showAPIResponse) {
   const subscriptions = await PushAPI.user.getSubscriptions({
     user: `eip155:5:${signer.address}`, // user address in CAIP
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.user.getSubscriptions | Response - 200 OK");
@@ -124,10 +120,10 @@ async function PushAPI_user_getSubscriptions(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.channels.getChannel
-async function PushAPI_channels_getChannel(silent: boolean = true) {
+async function PushAPI_channels_getChannel(silent: boolean = !showAPIResponse) {
   const channelData = await PushAPI.channels.getChannel({
     channel: channelAddress,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI.channels.getChannel | Response - 200 OK')
@@ -137,12 +133,12 @@ async function PushAPI_channels_getChannel(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.channels.search
-async function PushAPI_channels_search(silent: boolean = true) {
+async function PushAPI_channels_search(silent: boolean = !showAPIResponse) {
   const channelsData = await PushAPI.channels.search({
     query: 'push', // a search query
     page: 1, // page index
     limit: 20, // no of items per page
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI.channels.search | Response - 200 OK')
@@ -152,7 +148,7 @@ async function PushAPI_channels_search(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.channels.subscribe
-async function PushAPI_channels_subscribe(silent: boolean = true) {
+async function PushAPI_channels_subscribe(silent: boolean = !showAPIResponse) {
   const response = await PushAPI.channels.subscribe({
     // @ts-ignore
     signer: signer,
@@ -164,7 +160,7 @@ async function PushAPI_channels_subscribe(silent: boolean = true) {
     onError: () => {
       console.error('opt in error');
     },
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.channels.subscribe | Response - 200 OK");
@@ -174,7 +170,7 @@ async function PushAPI_channels_subscribe(silent: boolean = true) {
 }
 
 // Push Notification - PushAPI.channels.unsubscribe
-async function PushAPI_channels_unsubscribe(silent: boolean = true) {
+async function PushAPI_channels_unsubscribe(silent: boolean = !showAPIResponse) {
   const response = await PushAPI.channels.unsubscribe({
     // @ts-ignore
     signer: signer,
@@ -186,19 +182,19 @@ async function PushAPI_channels_unsubscribe(silent: boolean = true) {
     onError: () => {
       console.error('opt out error');
     },
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.channels.unsubscribe | Response - 200 OK");
   if (!silent) {
-  console.log(response);
+    console.log(response);
   }
 }
 
 // Push Notification - Send Notifications
 // Direct payload for single recipient(target)
 // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_single_recipient(silent: boolean = true) {
+async function PushAPI_payloads_sendNotification__direct_payload_single_recipient(silent: boolean = !showAPIResponse) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: signerChannel, // Need to resolve to channel address
     type: 3, // target
@@ -215,7 +211,7 @@ async function PushAPI_payloads_sendNotification__direct_payload_single_recipien
     },
     recipients: `eip155:5:${signer.address}`, // recipient address
     channel: `eip155:5:${signerChannel.address}`, // your channel address
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI.payloads.sendNotification | Response - 204 OK')
@@ -226,7 +222,7 @@ async function PushAPI_payloads_sendNotification__direct_payload_single_recipien
 
 // Push Notification - Direct payload for group of recipients(subset)
 // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipient_subset(silent: boolean = true) {
+async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipient_subset(silent: boolean = !showAPIResponse) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: signerChannel, // Need to resolve to channel address
     type: 4, // subset
@@ -243,7 +239,7 @@ async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipi
     },
     recipients: [`eip155:5:${signer.address}`, `eip155:5:${signerSecondAccount.address}`], // recipient addresses
     channel: `eip155:5:${signerChannel.address}`, // your channel address
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.payloads.sendNotification | Response - 204 OK");
@@ -254,7 +250,7 @@ async function PushAPI_payloads_sendNotification__direct_payload_group_of_recipi
 
 // Push Notification - Direct payload for all recipients(broadcast)
 // PushAPI.payloads.sendNotification
-async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_brodcast(silent: boolean = true) {
+async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_brodcast(silent: boolean = !showAPIResponse) {
   const apiResponse = await PushAPI.payloads.sendNotification({
     signer: signerChannel, // Needs to resolve to channel address
     type: 1, // broadcast
@@ -270,7 +266,7 @@ async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_
       img: ''
     },
     channel: `eip155:5:${signerChannel.address}`, // your channel address
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.payloads.sendNotification | Response - 204 OK");
@@ -280,10 +276,10 @@ async function PushAPI_payloads_sendNotification__direct_payload_all_recipients_
 }
 
 // Push Notification - Get Subscribers list from channels (DEPRECATED)
-async function PushAPI_channels_getSubscribers(silent: boolean = true) {
+async function PushAPI_channels_getSubscribers(silent: boolean = !showAPIResponse) {
   const subscribers = await PushAPI.channels._getSubscribers({
     channel: `eip155:5:${channelAddress}`, // channel address in CAIP
-    env
+    env: env as ENV
   });
 
   console.log("PushAPI.channels._getSubscribers | Response - 200 OK");
@@ -293,11 +289,11 @@ async function PushAPI_channels_getSubscribers(silent: boolean = true) {
 }
 
 // Push Notification - Socket Connection
-async function PushSDKSocket(silent: boolean = true) {
+async function PushSDKSocket(silent: boolean = !showAPIResponse) {
   const pushSDKSocket = createSocketConnection({
     user: `eip155:5:${signer.address}`, // CAIP, see below
-    env,
     socketOptions: { autoConnect: false },
+    env: env as ENV
   })
 
   if (!pushSDKSocket) {
@@ -335,11 +331,11 @@ async function PushSDKSocket(silent: boolean = true) {
 // Push Chat - Run Chat Use cases
 async function runChatUseCases() {
 console.log(`
-██████  ██   ██  █████  ████████ 
-██      ██   ██ ██   ██    ██    
-██      ███████ ███████    ██    
-██      ██   ██ ██   ██    ██    
- ██████ ██   ██ ██   ██    ██    
+  ██████  ██   ██  █████  ████████ 
+  ██      ██   ██ ██   ██    ██    
+  ██      ███████ ███████    ██    
+  ██      ██   ██ ██   ██    ██    
+  ██████  ██   ██ ██   ██    ██    
 `);
   console.log('PushAPI.user.create')
   await PushAPI_user_create()
@@ -391,17 +387,17 @@ console.log(`
 }
 
 // Push Chat - PushAPI.user.create
-async function PushAPI_user_create(silent: boolean = true) {
+async function PushAPI_user_create(silent: boolean = !showAPIResponse) {
   const user = await PushAPI.user.create({
     // @ts-ignore
     signer: signer,
-    env,
+    env: env as ENV
   })
 
   const user_2 = await PushAPI.user.create({
     // @ts-ignore
     signer: signerSecondAccount,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_user_create | Response - 200 OK')
@@ -414,10 +410,10 @@ async function PushAPI_user_create(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.user.get
-async function PushAPI_user_get(silent: boolean = true) {
+async function PushAPI_user_get(silent: boolean = !showAPIResponse) {
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_user_get | Response - 200 OK')
@@ -428,11 +424,11 @@ async function PushAPI_user_get(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.decryptPGPKey
-async function PushAPI_chat_decryptPGPKey(silent: boolean = true) {
+async function PushAPI_chat_decryptPGPKey(silent: boolean = !showAPIResponse) {
   // get user and derive encrypted PGP key
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // decrypt the PGP Key
@@ -449,11 +445,11 @@ async function PushAPI_chat_decryptPGPKey(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.chats
-async function PushAPI_chat_chats(silent: boolean = true) {
+async function PushAPI_chat_chats(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -468,7 +464,7 @@ async function PushAPI_chat_chats(silent: boolean = true) {
     account: `eip155:${signer.address}`,
     toDecrypt: true,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_chats | Response - 200 OK')
@@ -478,11 +474,11 @@ async function PushAPI_chat_chats(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.requests
-async function PushAPI_chat_requests(silent: boolean = true) {
+async function PushAPI_chat_requests(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -497,7 +493,7 @@ async function PushAPI_chat_requests(silent: boolean = true) {
     account: `eip155:${signer.address}`,
     toDecrypt: true,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_requests | Response - 200 OK')
@@ -507,12 +503,12 @@ async function PushAPI_chat_requests(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.conversationHash
-async function PushAPI_chat_conversationHash(silent: boolean = true) {
+async function PushAPI_chat_conversationHash(silent: boolean = !showAPIResponse) {
   // conversation hash are also called link inside chat messages
   const conversationHash = await PushAPI.chat.conversationHash({
     account: `eip155:${signer.address}`,
     conversationId: `eip155:${signerSecondAccount.address}`, // 2nd address
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_conversationHash | Response - 200 OK')
@@ -522,11 +518,11 @@ async function PushAPI_chat_conversationHash(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.latest
-async function PushAPI_chat_latest(silent: boolean = true) {
+async function PushAPI_chat_latest(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -541,7 +537,7 @@ async function PushAPI_chat_latest(silent: boolean = true) {
   const conversationHash = await PushAPI.chat.conversationHash({
     account: `eip155:${signer.address}`,
     conversationId: `eip155:${signerSecondAccount.address}`, // 2nd address
-    env,
+    env: env as ENV
   })
 
   // Actual API
@@ -551,7 +547,7 @@ async function PushAPI_chat_latest(silent: boolean = true) {
     account: `eip155:${signer.address}`,
     toDecrypt: true,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_latest | Response - 200 OK')
@@ -561,11 +557,11 @@ async function PushAPI_chat_latest(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.history
-async function PushAPI_chat_history(silent: boolean = true) {
+async function PushAPI_chat_history(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -580,7 +576,7 @@ async function PushAPI_chat_history(silent: boolean = true) {
   const conversationHash = await PushAPI.chat.conversationHash({
     account: `eip155:${signer.address}`,
     conversationId: `eip155:${signerSecondAccount.address}`, // 2nd address
-    env,
+    env: env as ENV
   })
 
   // Actual API
@@ -591,7 +587,7 @@ async function PushAPI_chat_history(silent: boolean = true) {
     limit: 5,
     toDecrypt: true,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_history | Response - 200 OK')
@@ -602,11 +598,11 @@ async function PushAPI_chat_history(silent: boolean = true) {
 
 // Push Chat - PushAPI.chat.send
 // // Will send a message to the user or chat request in case user hasn't approved them
-async function PushAPI_chat_send(silent: boolean = true) {
+async function PushAPI_chat_send(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -624,7 +620,7 @@ async function PushAPI_chat_send(silent: boolean = true) {
     // @ts-ignore
     signer: signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_send | Response - 200 OK')
@@ -634,11 +630,11 @@ async function PushAPI_chat_send(silent: boolean = true) {
 }
 
 // Push Chat - Approve
-async function PushAPI_chat_approve(silent: boolean = true) {
+async function PushAPI_chat_approve(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signerSecondAccount.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -655,7 +651,7 @@ async function PushAPI_chat_approve(silent: boolean = true) {
     // @ts-ignore
     signer: signerSecondAccount,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_approve | Response - 200 OK')
@@ -665,11 +661,11 @@ async function PushAPI_chat_approve(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.createGroup
-async function PushAPI_chat_createGroup(silent: boolean = true): Promise<string> {
+async function PushAPI_chat_createGroup(silent: boolean = !showAPIResponse): Promise<string> {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -691,7 +687,7 @@ async function PushAPI_chat_createGroup(silent: boolean = true): Promise<string>
     // @ts-ignore
     signer: signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_createGroup | Response - 200 OK')
@@ -702,11 +698,11 @@ async function PushAPI_chat_createGroup(silent: boolean = true): Promise<string>
 }
 
 // Push Chat - PushAPI.chat.updateGroup
-async function PushAPI_chat_updateGroup(chatId: string, silent: boolean = true) {
+async function PushAPI_chat_updateGroup(chatId: string, silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -730,7 +726,7 @@ async function PushAPI_chat_updateGroup(chatId: string, silent: boolean = true) 
     // @ts-ignore
     signer: signer,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_updateGroup | Response - 200 OK')
@@ -740,10 +736,10 @@ async function PushAPI_chat_updateGroup(chatId: string, silent: boolean = true) 
 }
 
 // Push Chat - PushAPI.chat.getGroupByName
-async function PushAPI_chat_getGroupByName(silent: boolean = true) {
+async function PushAPI_chat_getGroupByName(silent: boolean = !showAPIResponse) {
   const response = await PushAPI.chat.getGroupByName({
     groupName: 'Push Group Chat 3',
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_getGroupByName | Response - 200 OK')
@@ -753,10 +749,10 @@ async function PushAPI_chat_getGroupByName(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.getGroup
-async function PushAPI_chat_getGroup(silent: boolean = true) {
+async function PushAPI_chat_getGroup(silent: boolean = !showAPIResponse) {
   const response = await PushAPI.chat.getGroup({
     chatId: '870cbb20f0b116d5e461a154dc723dc1485976e97f61a673259698aa7f48371c',
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_getGroup | Response - 200 OK')
@@ -766,11 +762,11 @@ async function PushAPI_chat_getGroup(silent: boolean = true) {
 }
 
 // Push Chat - PushAPI.chat.decryptConversation
-async function PushAPI_chat_decryptConversation(silent: boolean = true) {
+async function PushAPI_chat_decryptConversation(silent: boolean = !showAPIResponse) {
   // Fetch user
   const user = await PushAPI.user.get({
     account: `eip155:${signer.address}`,
-    env,
+    env: env as ENV
   })
 
   // Decrypt PGP Key
@@ -785,7 +781,7 @@ async function PushAPI_chat_decryptConversation(silent: boolean = true) {
   const conversationHash = await PushAPI.chat.conversationHash({
     account: `eip155:${signer.address}`,
     conversationId: `eip155:${signerSecondAccount.address}`, // 2nd address
-    env,
+    env: env as ENV
   })
 
   // Chat History
@@ -796,7 +792,7 @@ async function PushAPI_chat_decryptConversation(silent: boolean = true) {
     limit: 5,
     toDecrypt: false,
     pgpPrivateKey: pgpDecrpyptedPvtKey,
-    env,
+    env: env as ENV
   })
 
   // Decrypted Chat
@@ -804,7 +800,7 @@ async function PushAPI_chat_decryptConversation(silent: boolean = true) {
     messages: encryptedChats, // array of message object fetched from chat.history method
     connectedUser: user, // user meta data object fetched from chat.get method
     pgpPrivateKey: pgpDecrpyptedPvtKey, //decrypted private key
-    env,
+    env: env as ENV
   })
 
   console.log('PushAPI_chat_decryptConversation | Response - 200 OK')
@@ -814,12 +810,12 @@ async function PushAPI_chat_decryptConversation(silent: boolean = true) {
 }
 
 // Push Chat - Socket Connection
-async function PushChatSDKSocket(silent: boolean = true) {
+async function PushChatSDKSocket(silent: boolean = !showAPIResponse) {
   const pushSDKSocket = createSocketConnection({
     user: `eip155:${signer.address}`,
     socketType: 'chat',
     socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
-    env,
+    env: env as ENV
   })
 
   if (!pushSDKSocket) {
@@ -833,7 +829,7 @@ async function PushChatSDKSocket(silent: boolean = true) {
     // Fetch user
     const user = await PushAPI.user.get({
       account: `eip155:${signerSecondAccount.address}`,
-      env,
+      env: env as ENV
     })
 
     // Decrypt PGP Key
@@ -851,7 +847,7 @@ async function PushChatSDKSocket(silent: boolean = true) {
       // @ts-ignore
       signer: signerSecondAccount,
       pgpPrivateKey: pgpDecrpyptedPvtKey,
-      env,
+      env: env as ENV
     })
     console.log('PushAPI_chat_send | Response - 200 OK')
   })
@@ -875,6 +871,62 @@ async function PushChatSDKSocket(silent: boolean = true) {
   await delay(4000)
 }
 
-runNotificaitonsUseCases().then(() => {
-  runChatUseCases()
-})
+// Use Cases
+function start() {
+  console.log(`${returnHeadingLog()}`);
+  console.log(`${returnENVLog()}`);
+  
+  runNotificaitonsUseCases().then(() => {
+    runChatUseCases()
+  })
+}
+
+start();
+
+// -----------
+// -----------
+// FUNCTION TO EMIT HEADER
+// -----------
+// -----------
+function returnHeadingLog() {
+  const headingLog = `
+    ███████ ██████  ██   ██     ███████ ██    ██ ███    ██  ██████ ████████ ██  ██████  ███    ██  █████  ██      ██ ████████ ██    ██ 
+    ██      ██   ██ ██  ██      ██      ██    ██ ████   ██ ██         ██    ██ ██    ██ ████   ██ ██   ██ ██      ██    ██     ██  ██  
+    ███████ ██   ██ █████       █████   ██    ██ ██ ██  ██ ██         ██    ██ ██    ██ ██ ██  ██ ███████ ██      ██    ██      ████   
+        ██ ██   ██ ██  ██      ██      ██    ██ ██  ██ ██ ██         ██    ██ ██    ██ ██  ██ ██ ██   ██ ██      ██    ██       ██    
+    ███████ ██████  ██   ██     ██       ██████  ██   ████  ██████    ██    ██  ██████  ██   ████ ██   ██ ███████ ██    ██       ██    
+  `
+  return headingLog;
+}
+
+function returnENVLog() {
+  let environmentLog = `
+    ███████ ████████  █████   ██████  ██ ███    ██  ██████  
+    ██         ██    ██   ██ ██       ██ ████   ██ ██       
+    ███████    ██    ███████ ██   ███ ██ ██ ██  ██ ██   ███ 
+         ██    ██    ██   ██ ██    ██ ██ ██  ██ ██ ██    ██ 
+    ███████    ██    ██   ██  ██████  ██ ██   ████  ██████  
+  `;
+
+  if (env === ENV.PROD) {
+    environmentLog = `
+      ██████  ██████   ██████  ██████  ██    ██  ██████ ████████ ██  ██████  ███    ██
+      ██   ██ ██   ██ ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ████   ██
+      ██████  ██████  ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ██ ██  ██
+      ██      ██   ██ ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ██  ██ ██
+      ██      ██   ██  ██████  ██████   ██████   ██████    ██    ██  ██████  ██   ████
+    `;
+  } else if (env === ENV.DEV) {
+    environmentLog = `
+      ██████  ███████ ██    ██
+      ██   ██ ██      ██    ██
+      ██   ██ █████   ██    ██
+      ██   ██ ██       ██  ██
+      ██████  ███████   ████
+    `;
+  }
+
+  return environmentLog;
+}
+
+
