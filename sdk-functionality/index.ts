@@ -8,7 +8,7 @@ dotenv.config();
 
 // CONFIGS
 const env = process.env.PUSH_NODE_NETWORK; // choose ENV.STAGING or ENV.PROD
-const showAPIResponse = true; // choose to show or hide API responses
+const showAPIResponse = process.env.SHOW_API_RESPONSE === 'true' ? true : false; // choose to show or hide API responses
 
 // If you own a channel, you can use your channel address as well
 const channelPrivateKey: string = process.env.WALLET_PRIVATE_KEY!
