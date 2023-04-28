@@ -1,5 +1,5 @@
 import * as PushAPI from "@pushprotocol/restapi";
-import { ENV } from '@pushprotocol/restapi/src/lib/constants';
+import { ENV } from '@pushprotocol/restapi/src/lib/constants'
 import { createSocketConnection, EVENTS } from '@pushprotocol/socket';
 import * as dotenv from 'dotenv';
 import { ethers } from "ethers";
@@ -956,16 +956,16 @@ async function runNFTChatUseCases() {
       account: nftAccount1,
       signer: nftSigner1,
       env: env as ENV,
-      additionalMeta: {password: nftProfilePassword1}
+      additionalMeta: { password: nftProfilePassword1 },
     })
-  
+
     const user2 = await PushAPI.user.create({
       account: nftAccount2,
       signer: nftSigner2,
       env: env as ENV,
-      additionalMeta: {password: nftProfilePassword2}
+      additionalMeta: { password: nftProfilePassword2 },
     })
-  
+
     console.log('PushAPI_nft_user_create | Response - 200 OK')
     if (!silent) {
       console.log(user1)
@@ -977,11 +977,11 @@ async function runNFTChatUseCases() {
   async function PushAPI_nft_user_get(silent: boolean = !showAPIResponse) {
     const user = await PushAPI.user.get({
       account: nftAccount1,
-      env: env as ENV
+      env: env as ENV,
     })
-  
+
     console.log('PushAPI_nft_user_get | Response - 200 OK')
-  
+
     if (!silent) {
       console.log(user)
     }
@@ -1013,24 +1013,24 @@ async function runNFTChatUseCases() {
     // Fetch user
     const user = await PushAPI.user.get({
       account: nftAccount1,
-      env: env as ENV
+      env: env as ENV,
     })
-  
+
     // Decrypt PGP Key
     const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
       encryptedPGPPrivateKey: user.encryptedPrivateKey,
       // @ts-ignore
       signer: nftSigner1,
     })
-  
+
     // Actual api
     const response = await PushAPI.chat.chats({
       account: nftAccount1,
       toDecrypt: true,
       pgpPrivateKey: pgpDecrpyptedPvtKey,
-      env: env as ENV
+      env: env as ENV,
     })
-  
+
     console.log('PushAPI_nft_chat_chats | Response - 200 OK')
     if (!silent) {
       console.log(response)
@@ -1376,30 +1376,30 @@ async function runNFTChatUseCases() {
       user: nftAccount1,
       socketType: 'chat',
       socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
-      env: env as ENV
+      env: env as ENV,
     })
-  
+
     if (!pushSDKSocket) {
       throw new Error('Socket not connected')
     }
-  
+
     pushSDKSocket.on(EVENTS.CONNECT, async () => {
       console.log('Socket Connected - will disconnect after 4 seconds')
-  
+
       // send a chat from other wallet to this one to see the result
       // Fetch user
       const user = await PushAPI.user.get({
         account: nftAccount1,
-        env: env as ENV
+        env: env as ENV,
       })
-  
+
       // Decrypt PGP Key
       const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
         encryptedPGPPrivateKey: user.encryptedPrivateKey,
         // @ts-ignore
         signer: nftSigner1,
       })
-  
+
       // Actual api
       const response = await PushAPI.chat.send({
         messageContent: "Gm gm! It's me... Mario",
@@ -1408,35 +1408,35 @@ async function runNFTChatUseCases() {
         account: nftAccount1,
         signer: nftSigner1,
         pgpPrivateKey: pgpDecrpyptedPvtKey,
-        env: env as ENV
+        env: env as ENV,
       })
       console.log('PushAPI_nft_chat_send | Response - 200 OK')
     })
-  
+
     pushSDKSocket.on(EVENTS.DISCONNECT, () => {
       console.log('Socket Disconnected')
     })
-  
+
     pushSDKSocket.on(EVENTS.CHAT_RECEIVED_MESSAGE, (message) => {
       // feedItem is the notification data when that notification was received
       console.log('Incoming Push Chat message from Socket')
       if (!silent) {
         console.log(message)
       }
-  
+
       // disconnect socket after this, not to be done in real implementations
       pushSDKSocket.disconnect()
     })
-  
+
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
     await delay(4000)
   }
 
 // Use Cases
 function start() {
-  console.log(`${returnHeadingLog()}`);
-  console.log(`${returnENVLog()}`);
-  
+  console.log(`${returnHeadingLog()}`)
+  console.log(`${returnENVLog()}`)
+
   runNotificaitonsUseCases().then(() => {
     runChatUseCases().then(() => {
       runNFTChatUseCases()
