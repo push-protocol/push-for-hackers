@@ -1372,8 +1372,12 @@ async function runNFTChatUseCases() {
   
   // Push Chat - Socket Connection
   async function PushNFTChatSDKSocket(silent: boolean = !showAPIResponse) {
+       let user = await PushAPI.user.get({
+        account: nftAccount1,
+        env: env as ENV,
+    })
     const pushSDKSocket = createSocketConnection({
-      user: nftAccount1,
+      user: user.did,
       socketType: 'chat',
       socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
       env: env as ENV,
@@ -1388,7 +1392,7 @@ async function runNFTChatUseCases() {
 
       // send a chat from other wallet to this one to see the result
       // Fetch user
-      const user = await PushAPI.user.get({
+      user = await PushAPI.user.get({
         account: nftAccount1,
         env: env as ENV,
       })
