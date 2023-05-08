@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pushprotocol/restapi": "^1.2.7",
+    "@pushprotocol/restapi": "latest",
     "@pushprotocol/socket": "^0.5.0",
     "@types/node": "18.15.11",
     "dotenv": "^16.0.3",
