@@ -1448,8 +1448,14 @@ async function PushNFTChatSDKSocket(silent: boolean = !showAPIResponse) {
     account: nftAccount1,
     env: env as ENV,
   })
+
+  let did = user.did;
+  const addressComponents = did.split(':');
+  addressComponents.pop();
+  did = addressComponents.join(':');
+
   const pushSDKSocket = createSocketConnection({
-    user: user.did,
+    user: did,
     socketType: 'chat',
     socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
     env: env as ENV,
